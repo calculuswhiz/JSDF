@@ -9,7 +9,7 @@ let a=new LinkedList("q");
 a.push_back(1);
 a.push_back(2);
 a.push_back(3);
-a.head.next = a.head.next;  // Bad!
+a.head.next.next = a.head.next;  // Bad!
 console.log(a.toArray());  // Uh, oh! Infinite loop!
 ```
 
