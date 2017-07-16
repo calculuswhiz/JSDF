@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+    <title>Data Structures</title>
+    <link rel="stylesheet" href="util/jquery-ui-1.12.1.custom/jquery-ui.min.css">
+    <link rel="stylesheet" href="util/jquery-ui-1.12.1.custom/jquery-ui.theme.min.css">
+    <style type="text/css">
+        .method{color:red;}
+        .property{color:#00ff00;}
+    </style>
+    <script src="util/jquery-ui-1.12.1.custom/external/jquery/jquery.js"></script>
+    <script src="util/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+    <script>
+        $( function() {
+            $( "#accordion" ).accordion();
+        } );
+    </script>
+    <script src="LinkedList.js"></script>
+    <script src="DoublyLinkedList.js"></script>
+</head>
+<body>
+Open the console to interact. Structures done:
+<div id="accordion">
+    <h3>LinkedList() - singly linked list. Not especially useful.</h3>
+    <div> <ul>
+            <li><span class="property">length</span> - holds the length of the list.</li>
+            <li><span class="method">indexOf(value)</span> - Return the first index occurence of value</li>
+            <li><span class="method">getLength()</span> - Return length of list.</li>
+            <li><span class="method">swap(a,b)</span> - swap at index a and b.</li>
+            <li><span class="method">appendList(list)</span> - append another list to this one.</li>
+            <li><span class="method">reverse(a,b)</span> - reverse betweeen indices a and b inclusive.</li>
+            <li><span class="method">insertAt(index, value)</span> - insert value at index.</li>
+            <li><span class="method">push_back(value)</span> - push a value to the back of the list.</li>
+            <li><span class="method">push_front(value)</span> - push a value to the front of the list.</li>
+            <li><span class="method">removeAt(index)</span> - remove the element at index.</li>
+            <li><span class="method">pop_back()</span> - remove the back element of list. Returns the element.</li>
+            <li><span class="method">pop_front()</span> - remove the front element of list. Returns the element.</li>
+            <li><span class="method">assign(index, value)</span> - assign element at index a value.</li>
+            <li><span class="method">sublist(a,b)</span> - return a new LinkedList. Copies data from index a to b inclusive.</li>
+            <li><span class="method">getValueAt(index)</span> - return the value stored at index.</li>
+            <li><span class="method">toArray()</span> - return an array representation of the LinkedList.</li>
+        </ul>
+    </div>
+    <h3>DoublyLinkedList() - doubly linked list. (Each node has a prev and next pointer).</h3>
+    <div> <ul>
+            <li><span class="property">length</span> - holds the length of the list.</li>
+            <li><span class="method">indexOf(value)</span> - Return the first index occurence of value</li>
+            <li><span class="method">lastIndexOf(value)</span> - Return the last index occurence of value</li>
+            <li><span class="method">getLength()</span> - Return length of list.</li>
+            <li><span class="method">swap(a,b)</span> - swap at index a and b.</li>
+            <li><span class="method">appendList(list)</span> - append another list to this one.</li>
+            <li><span class="method">reverse(a,b)</span> - reverse betweeen indices a and b inclusive.</li>
+            <li><span class="method">insertAt(index, value)</span> - insert value at index.</li>
+            <li><span class="method">push_back(value)</span> - push a value to the back of the list.</li>
+            <li><span class="method">push_front(value)</span> - push a value to the front of the list.</li>
+            <li><span class="method">removeAt(index)</span> - remove the element at index.</li>
+            <li><span class="method">pop_back()</span> - remove the back element of list. Returns the element.</li>
+            <li><span class="method">pop_front()</span> - remove the front element of list. Returns the element.</li>
+            <li><span class="method">assign(index, value)</span> - assign element at index a value.</li>
+            <li><span class="method">sort(compareFunction)</span> - Sorts the list using a comparison function. Replaces current list. compareFunction is a function that takes arguments a and b. See <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort">Array.prototype.sort</a> for more info.</li>
+            <li><span class="method">sublist(a,b)</span> - return a new LinkedList. Copies data from index a to b inclusive.</li>
+            <li><span class="method">getValueAt(index)</span> - return the value stored at index.</li>
+            <li><span class="method">toArray()</span> - return an array representation of the LinkedList.</li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
