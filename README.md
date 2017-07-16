@@ -1,5 +1,5 @@
 # JSDF
-JavaScript Data-structures Fun (No relation to the Japanese Self-Defense Force)
+**J**ava**S**cript **D**ata-structures **F**un (No relation to the Japanese Self-Defense Force)
 
 ## Why?
 In an effort to sharpen my JavaScript skills and keep up my technical interview skills after being stuck in a dead-end job for the next couple years, I started this project for fun. Here, you'll find several data structures implemented in JavaScript for your up-to-date browser. Has it been done before by other folks out there? Yeah, but I don't think most of them keep security in mind (nobody I could find did). For example, in many implementations I found for linked lists (an interviewer favorite, I'm told), the head of the list was accessible by a `this.head`. Don't you see the problem here? What if I did this:
