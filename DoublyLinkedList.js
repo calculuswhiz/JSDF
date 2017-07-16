@@ -1,4 +1,5 @@
 let DoublyLinkedList = (function(val){
+    // Private member access
     let map = new WeakMap();
 
     let internal = function(object){
@@ -341,6 +342,17 @@ let DoublyLinkedList = (function(val){
         for(let i=0, len=ns.length; i<len; i++){
             temp.push(curNode.data);
             curNode = curNode.next;
+        }
+        return temp;
+    };
+    
+    DoublyLinkedList.prototype.toArrayBackwards = function(){
+        let ns = internal(this);
+        let curNode = ns.tail;
+        let temp = [];
+        for(let i=0, len=ns.length; i<len; i++){
+            temp.push(curNode.data);
+            curNode = curNode.prev;
         }
         return temp;
     };
