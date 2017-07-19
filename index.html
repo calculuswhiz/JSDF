@@ -19,11 +19,12 @@
     <script src="LinkedList.js"></script>
     <script src="DoublyLinkedList.js"></script>
     <script src="BinarySearchTree.js"></script>
+    <script src="DisjointSetForest.js"></script>
 </head>
 <body>
 Open the console to interact. Structures done:
 <div id="accordion">
-    <h3>LinkedList() - singly linked list. Not especially useful. Didn't spend much time here.</h3>
+    <h3>LinkedList(value) - singly linked list. Not especially useful. Didn't spend much time here.</h3>
     <div> <ul>
             <li><span class="property">length</span> - holds the length of the list.</li>
             <li><span class="method">indexOf(value)</span> - Return the first index occurence of value</li>
@@ -43,7 +44,7 @@ Open the console to interact. Structures done:
             <li><span class="method">toArray()</span> - return an array representation of the LinkedList.</li>
         </ul>
     </div>
-    <h3>DoublyLinkedList() - doubly linked list. (Each node has a prev and next pointer).</h3>
+    <h3>DoublyLinkedList(value) - doubly linked list. (Each node has a prev and next pointer).</h3>
     <div> <ul>
             <li><span class="property">length</span> - holds the length of the list.</li>
             <li><span class="method">indexOf(value)</span> - Return the first index occurence of value</li>
@@ -66,13 +67,20 @@ Open the console to interact. Structures done:
             <li><span class="method">toArrayBackwards()</span> - return an array representation of the LinkedList, but starting from the tail and going backwards.</li>
         </ul>
     </div>
-    <h3>BinarySearchTree() - Binary Search Tree</h3>
+    <h3>BinarySearchTree(value) - Binary Search Tree</h3>
     <div> <ul>
             <li><span class="property"></span></li>
             <li><span class="method">insertKey(val)</span> - Put a value into the search tree.</li>
             <li><span class="method">toArrayPreO(val)</span> - Pre Order traversal</li>
             <li><span class="method">toArrayInO(val)</span> - In Order traversal.</li>
             <li><span class="method">toArrayPostO(val)</span> - Post Order traversal.</li>
+        </ul>
+    </div>
+    <h3>DisjointSetForest(n) - A container for Disjoint Sets</h3>
+    <div> <ul>
+            <li><span class="method">find(index)</span> - find the representative element of the set containing index. Performs path compression.</li>
+            <li><span class="method">union(u,v)</span> - joins sets containing u and v. If already unioned, return false. If not, return true.</li>
+            <li><span class="method">toArray()</span> - return an array representation of the DisjointSetForest.</li>
         </ul>
     </div>
 </div>

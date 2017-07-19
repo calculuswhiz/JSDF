@@ -19,8 +19,9 @@ let DisjointSetForest = (function(n){
         }
     }
     
-    DisjointSetForest.prototype.find = functino(index){
-        let cache = this.elements[index];
+    DisjointSetForest.prototype.find = function(index){
+        let ns = internal(this);
+        let cache = ns.elements[index];
         if(cache.parent != index){
             cache.parent = this.find(cache.parent); // Path compression.
         }
@@ -28,14 +29,15 @@ let DisjointSetForest = (function(n){
     };
     
     DisjointSetForest.prototype.union = function(index1, index2) {
-        var uRoot = this.find(index1);
-        var vRoot = this.find(index2);
+        let ns = internal(this);
+        let uRoot = this.find(index1);
+        let vRoot = this.find(index2);
         
         if(uRoot == vRoot) // Same set
             return false;
         
-        var cacheU = this.elements[uRoot];
-        var cacheV = this.elements[vRoot];
+        let cacheU = ns.elements[uRoot];
+        let cacheV = ns.elements[vRoot];
         
         if(cacheU.rank < cacheV.rank)
             cacheU.parent = cacheV.parent;
@@ -46,6 +48,16 @@ let DisjointSetForest = (function(n){
             cacheU.rank += 1;
         }
         return true;
+    };
+    
+    DisjointSetForest.prototype.toArray = function() {
+        let ns = internal(this);
+        let retArr = [];
+        for(let i=0, len=ns.elements.length; i<len; i++){
+            retArr.push({rank:ns.elements[i].rank,
+                        parent:ns.elements[i].parent});
+        }
+        return retArr;
     };
     
     return DisjointSetForest;
