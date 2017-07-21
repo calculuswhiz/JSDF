@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDF Visualizer</title>
+    <script src="util/createjs-2015.11.26.min.js"></script>
+    <script src="util/strangl.js"></script>
+<script type="text/javascript">
+    var canvas;
+    var exportRoot;
+    var gc;
+    
+    let sgl = strangl;
+    var _go = true;
+    function go(){
+        _go ^= true;
+    }
+    
+    var cube;
+    var cubeWire;
+    var cubeModel;
+    
+    function init() {
+        // create a new stage and point it at our canvas:
+        canvas = document.getElementById("testCanvas");
+        
+        stage = new createjs.Stage(canvas);
+        exportRoot = new createjs.MovieClip();
+        exportRoot.x = 0;
+        exportRoot.y = 0;
+        stage.addChild(exportRoot);
+        // Add graphics context to stage:
+        gc = new createjs.Shape();
+        gc.x = canvas.width / 2;
+        gc.y = canvas.height / 2;
+        exportRoot.addChild(gc);
+        
+        // Set up render model:
+        cube = [
+                new sgl.Vertex( 1,-1,-1, 5,null,1,"blue", "0"),
+                new sgl.Vertex(-1,-1,-1, 5,null,1,"blue", "1"),
+                new sgl.Vertex(-1, 1,-1, 5,null,1,"blue", "2"),
+                new sgl.Vertex( 1, 1,-1, 5,null,1,"blue", "3"),
+                new sgl.Vertex( 1,-1, 1, 5,null,1,"blue", "4"),
+                new sgl.Vertex(-1,-1, 1, 5,null,1,"blue", "5"),
+                new sgl.Vertex(-1, 1, 1, 5,null,1,"blue", "6"),
+                new sgl.Vertex( 1, 1, 1, 5,null,1,"blue", "7")
+                ];
+        cubeWire = [];
+        for(let i=0; i<4; i++){
+            cubeWire.push(new sgl.Line(cube[i], cube[(i+1)%4], "red", 1));
+            cubeWire.push(new sgl.Line(cube[i], cube[i+4], "green", 1));
+            cubeWire.push(new sgl.Line(cube[i+4], cube[((i+1)%4)+4], "blue", 1));
+        }
+        cubeModel = [ new sgl.Polygon([cube[3],cube[2],cube[1],cube[0]], null, 1, [0xff,0x00,0x00,1.0], {renderWire:true}),
+                      new sgl.Polygon([cube[4],cube[5],cube[6],cube[7]], null, 1, [0x00,0xff,0x00,1.0], {renderWire:true}),
+                      new sgl.Polygon([cube[1],cube[5],cube[4],cube[0]], null, 1, [0x00,0x00,0xff,1.0], {renderWire:true}),
+                      new sgl.Polygon([cube[2],cube[6],cube[5],cube[1]], null, 1, [0x00,0xff,0xff,1.0], {renderWire:true}),
+                      new sgl.Polygon([cube[3],cube[7],cube[6],cube[2]], null, 1, [0xff,0x00,0xff,1.0], {renderWire:true}),
+                      new sgl.Polygon([cube[0],cube[4],cube[7],cube[3]], null, 1, [0xff,0xff,0x00,1.0], {renderWire:true}) ];
+                      
+        stage.on("mousedown", function(){go ^= true});
+
+        // start the tick and point it at the window so we can do some work before updating the stage:
+        createjs.Ticker.fps = 30;
+        createjs.Ticker.addEventListener("tick", tick);
+    }
+    
+    let rotAmt = 0;
+    function render(){
+        let renderList = [];
+        for(let i=0, len=cube.length; i<len; i++){
+            renderList.push(cube[i].copy().rotX(rotAmt).rotY(Math.PI/4).scale(50).translate(-100,0,0).doOrtho(1));
+        }
+        for(let i=0, len=cubeWire.length; i<len; i++){
+            renderList.push(cubeWire[i].copy().rotX(rotAmt).rotY(Math.PI/4).scale(50).translate(100,0,0).doOrtho(1));
+        }
+        for(let i=0, len=cubeModel.length; i<len; i++){
+            renderList.push(cubeModel[i].copy().rotX(rotAmt).rotY(Math.PI/4).scale(50).translate(0,200,0).doOrtho(1));
+        }
+        renderList.sort(sgl.centroidSort);
+        
+            // console.log(renderList);
+        
+        for(let i=0, len=renderList.length; i<len; i++){
+            renderList[i].render(gc.graphics);
+        }
+    }
+    
+    function tick(event) {
+        gc.graphics.clear();
+        render();
+        rotAmt += 0.1;
+        // draw the updates to stage:
+        if(_go)
+            stage.update(event);
+    }
+</script>
+
+</head>
+
+<body onload="init();">
+<p>stranglJS demo.
+</p>
+<canvas id="testCanvas" width="1024" height="760"></canvas>
+</body>
+</html>
