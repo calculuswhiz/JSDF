@@ -70,13 +70,13 @@
     function render(){
         let renderList = [];
         for(let i=0, len=cube.length; i<len; i++){
-            renderList.push(cube[i].copy().rotX(rotAmt).rotY(Math.PI/4).scale(50).translate(-100,0,0).doOrtho(1));
+            renderList.push(cube[i].copy().rotX(rotAmt).rotY(rotAmt/7).scale(50).translate(-100,0,0).rotZ(rotAmt).doOrtho(1));
         }
         for(let i=0, len=cubeWire.length; i<len; i++){
-            renderList.push(cubeWire[i].copy().rotX(rotAmt).rotY(Math.PI/4).scale(50).translate(100,0,0).doOrtho(1));
+            renderList.push(cubeWire[i].copy().rotX(rotAmt).rotY(rotAmt/7).scale(50).translate(100,0,0).rotZ(rotAmt).doOrtho(1));
         }
         for(let i=0, len=cubeModel.length; i<len; i++){
-            renderList.push(cubeModel[i].copy().rotX(rotAmt).rotY(Math.PI/4).scale(50).translate(0,200,0).doOrtho(1));
+            renderList.push(cubeModel[i].copy().rotX(rotAmt).rotY(rotAmt/7).scale(50).translate(0,200,0).rotZ(rotAmt).doOrtho(1));
         }
         renderList.sort(sgl.centroidSort);
         
