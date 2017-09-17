@@ -261,10 +261,11 @@ let DoublyLinkedList = (function(val){
             let sortedArray = [];
             for(let pairIndex=0, len=sortMe.length; pairIndex<len; pairIndex+=2){
                 let a_i = 0, b_i = 0;
-                let asrc = sortMe[pairIndex], bsrc = sortMe[pairIndex+1];
-                let alim = asrc.length, blim = bsrc.length;
+                let asrc = sortMe[pairIndex], bsrc = sortMe[pairIndex+1] || [];
                 sortedArray[pairIndex/2] = [];
                 let putbox = sortedArray[pairIndex/2];
+                    
+                let alim = asrc.length, blim = bsrc.length;
                 
                 while(a_i<alim && b_i<blim){
                     let result = compareFunction(asrc[a_i], bsrc[b_i]);
@@ -355,6 +356,54 @@ let DoublyLinkedList = (function(val){
             curNode = curNode.prev;
         }
         return temp;
+    };
+    
+    if(createjs == null && strangl == null){
+        return DoublyLinkedList;
+    }
+    
+    // Here begins the graphical stuff:
+    let sgl = strangl;
+    let cjs = createjs;
+    let arrow = [ new sgl.Line({x:0, y:0, z:0},{x:1, y:0, z:0},"black",1),
+                new sgl.Line({x:.8, y:-.1, z:0},{x:1, y:0, z:0},"black",1) ];
+    let databox = {box: new sgl.Polygon([{x:0, y:0, z:0},{x:0,y:1,z:0},{x:1,y:1,z:0},{x:1,y:0,z:0}],
+                    null, 1, [0xff,0x7f,0x00,.5], {renderWire:true}),
+                    prevpt: new sgl.Vertex(0, .33, 0),
+                    nextpt: new sgl.Vertex(1, .67, 0)
+                    };
+                
+    DoublyLinkedList.prototype.visualizeChain = function(clip, gc){
+        let ns = internal(this);
+        let curNode = ns.head;
+        
+        let renderList = []; // When transforms are done, push here.
+        clip.removeAllChildren();
+        for(let i=0, len=ns.length; i<len; i++){
+            // Transform box:
+            let curbox = databox.box.copy().scale(20).translate(i*30,0,0);
+            renderList.push(curbox);
+            // Next Arrow:
+            let nextContact = databox.nextpt.copy().scale(20).translate(i*30,0,0);
+            renderList.push(arrow[0].copy().scale(10).translate(nextContact.x, nextContact.y, 0));
+            renderList.push(arrow[1].copy().scale(10).translate(nextContact.x, nextContact.y, 0));
+            // Previous Arrow:
+            let prevContact = databox.prevpt.copy().scale(20).translate(i*30,0,0);
+            renderList.push(arrow[0].copy().rotZ(Math.PI).scale(10).translate(prevContact.x, prevContact.y, 0));
+            renderList.push(arrow[1].copy().rotZ(Math.PI).scale(10).translate(prevContact.x, prevContact.y, 0));
+            // Data:
+            let data = new cjs.Text(curNode.data, "15px Arial", "#0000ff");
+            data.x = i*30+15;
+            data.y = 0;
+            data.rotation = 90;
+            clip.addChild(data);
+            
+            curNode = curNode.next;
+        }
+        
+        for(let i=0, len=renderList.length; i<len; i++){
+            renderList[i].render(gc.graphics);
+        }
     };
     
     return DoublyLinkedList;

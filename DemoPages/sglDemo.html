@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title>JSDF Visualizer</title>
-    <script src="util/createjs-2015.11.26.min.js"></script>
-    <script src="util/strangl.js"></script>
+    <script src="../util/createjs-2015.11.26.min.js"></script>
+    <script src="../util/strangl.js"></script>
 <script type="text/javascript">
     var canvas;
     var exportRoot;
@@ -70,13 +70,13 @@
     function render(){
         let renderList = [];
         for(let i=0, len=cube.length; i<len; i++){
-            renderList.push(cube[i].copy().rotX(rotAmt).rotY(rotAmt/7).scale(50).translate(-100,0,0).rotZ(rotAmt).doOrtho(1));
+            renderList.push(cube[i].copy().rotX(rotAmt).rotY(rotAmt/7).scale(50).translate(-100,0,0).rotZ(rotAmt/11).doOrtho(1));
         }
         for(let i=0, len=cubeWire.length; i<len; i++){
-            renderList.push(cubeWire[i].copy().rotX(rotAmt).rotY(rotAmt/7).scale(50).translate(100,0,0).rotZ(rotAmt).doOrtho(1));
+            renderList.push(cubeWire[i].copy().rotX(rotAmt).rotY(rotAmt/7).scale(50).translate(100,0,0).rotZ(rotAmt/11).doOrtho(1));
         }
         for(let i=0, len=cubeModel.length; i<len; i++){
-            renderList.push(cubeModel[i].copy().rotX(rotAmt).rotY(rotAmt/7).scale(50).translate(0,200,0).rotZ(rotAmt).doOrtho(1));
+            renderList.push(cubeModel[i].copy().rotX(rotAmt).rotY(rotAmt/7).scale(50).translate(0,200,0).rotZ(rotAmt/11).doOrtho(1));
         }
         renderList.sort(sgl.centroidSort);
         

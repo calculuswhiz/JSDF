@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDF Visualizer</title>
+    <script src="../util/jquery-ui-1.12.1.custom/external/jquery/jquery.js"></script>
+    <script src="../util/createjs-2015.11.26.min.js"></script>
+    <script src="../util/strangl.js"></script>
+    <script src="../DoublyLinkedList.js"></script>
+<script type="text/javascript">
+    var canvas;
+    var exportRoot;
+    var gc, textLayer;
+    
+    var sgl = strangl;
+    var _go = true;
+    
+    var list = new DoublyLinkedList();
+    
+    function go(){
+        _go ^= true;
+    }
+    
+    var cube;
+    var cubeWire;
+    var cubeModel;
+    
+    function init() {
+        // create a new stage and point it at our canvas:
+        canvas = document.getElementById("testCanvas");
+        
+        stage = new createjs.Stage(canvas);
+        exportRoot = new createjs.MovieClip();
+        exportRoot.x = 0;
+        exportRoot.y = 0;
+        stage.addChild(exportRoot);
+        
+        // Add graphics context to stage:
+        gc = new createjs.Shape();
+        // gc.x = canvas.width / 2;
+        // gc.y = canvas.height / 2;
+        exportRoot.addChild(gc);
+        exportRoot.gc = gc;
+        
+        textLayer = new createjs.MovieClip();
+        textLayer.x = 0;
+        textLayer.y = 0;
+        exportRoot.addChild(textLayer);
+        exportRoot.textLayer = textLayer;
+                      
+        stage.on("stagemousedown", function(){go ^= true; console.info("go.");});
+
+        // start the tick and point it at the window so we can do some work before updating the stage:
+        createjs.Ticker.fps = 30;
+        createjs.Ticker.addEventListener("tick", tick);
+    }
+    
+    let rotAmt = 0;
+    
+    function tick(event) {
+        gc.graphics.clear();
+        if(_go){   
+            list.visualizeChain(textLayer, gc);
+            // draw the updates to stage:
+            stage.update(event);
+        }
+    }
+    
+    function enterbind(){
+        $("#stringfield").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#pushbackbtn").click();
+            }
+        });
+    }
+</script>
+
+</head>
+
+<body onload="init(); enterbind()">
+<p>DoublyLinkedList demo.
+</p>
+<canvas id="testCanvas" width="1400" height="250" style="border:3px; border-style:solid; border-color=#000000"></canvas>
+<p>Use this entry box to enter strings:</p>
+<input type="text" id="stringfield">
+<button id="pushbackbtn" onclick="list.push_back($('#stringfield')[0].value);document.getElementById('stringfield').select()">Push Back</button>
+<button onclick="list.push_front($('#stringfield')[0].value);document.getElementById('stringfield').select()">Push Front</button> <br />
+<button onclick="list.pop_back()">Pop back</button> <button onclick="list.pop_front()">Pop front</button> <br />
+<button onclick="list.sort()">Alphebetize (Merge sort)</button>
+</body>
+</html>
