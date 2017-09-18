@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDF Visualizer</title>
+    <title>JSDF: Double Linked List demo</title>
     <script src="../util/jquery-ui-1.12.1.custom/external/jquery/jquery.js"></script>
     <script src="../util/createjs-2015.11.26.min.js"></script>
     <script src="../util/strangl.js"></script>
@@ -72,6 +72,16 @@
                 $("#pushbackbtn").click();
             }
         });
+        $("#indexfield").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#insertAtBtn").click();
+            }
+        });
+        $("#indexfield2").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#swapBtn").click();
+            }
+        });
     }
 </script>
 
@@ -81,11 +91,17 @@
 <p>DoublyLinkedList demo.
 </p>
 <canvas id="testCanvas" width="1400" height="250" style="border:3px; border-style:solid; border-color=#000000"></canvas>
-<p>Use this entry box to enter strings:</p>
-<input type="text" id="stringfield">
-<button id="pushbackbtn" onclick="list.push_back($('#stringfield')[0].value);document.getElementById('stringfield').select()">Push Back</button>
-<button onclick="list.push_front($('#stringfield')[0].value);document.getElementById('stringfield').select()">Push Front</button> <br />
+Data: <input type="text" id="stringfield"><button id="pushbackbtn" onclick="list.push_back($('#stringfield')[0].value);document.getElementById('stringfield').select()">Push Back</button>
+<button onclick="list.push_front($('#stringfield')[0].value);document.getElementById('stringfield').select()">Push Front</button>
 <button onclick="list.pop_back()">Pop back</button> <button onclick="list.pop_front()">Pop front</button> <br />
+Index 1:<input type="text" id="indexfield" size='5'><button id="insertAtBtn" onclick="list.insertAt(parseInt($('#indexfield')[0].value),$('#stringfield')[0].value)">Insert Index</button><button onclick="list.removeAt(parseInt($('#indexfield')[0].value))">Remove Index</button><button onclick="list.assign(parseInt($('#indexfield')[0].value), $('#stringfield')[0].value)">Assign</button>
+<br />
+Index 2:<input type="text" id="indexfield2" size='5'><button id="swapBtn" onclick="list.swap($('#indexfield')[0].value,$('#indexfield2')[0].value)">Swap</button> <br />
+Misc:<br />
 <button onclick="list.sort()">Alphebetize (Merge sort)</button>
+<button onclick="list.reverse($('#indexfield')[0].value,$('#indexfield2')[0].value)">Reverse list</button>
+<button onclick="list.appendList(list.copy())">Append copy</button>
+<br />
+<button onclick="console.info(list.length)">Report Length (console)</button>
 </body>
 </html>

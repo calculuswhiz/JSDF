@@ -124,21 +124,24 @@ let DoublyLinkedList = (function(val){
         let back = {el: ns.tail, i:ns.length-1};
         
         while(front.i < a){
-            front.i++;
             front.el = front.el.next;
+            front.i ++;
         }
         while(back.i > b){
-            back.i--;
             back.el = back.el.prev;
+            back.i --;
         }
         
         // Swap each data pair.
         while(front.i < back.i){
-            front.i++;
-            back.i--;
             let temp = front.el.data;
             front.el.data = back.el.data;
             back.el.data = temp;
+            
+            front.i++;
+            back.i--;
+            front.el = front.el.next;
+            back.el = back.el.prev;
         }
     };
 
@@ -191,7 +194,8 @@ let DoublyLinkedList = (function(val){
     DoublyLinkedList.prototype.removeAt = function(index) {
         let ns = internal(this);
         if(index >= ns.length || index < 0 || ns.length == 0)
-            throw "Index out of bounds";
+            return undefined;
+            // throw "Index out of bounds";
         
         ns.length -= 1;
         
@@ -322,6 +326,10 @@ let DoublyLinkedList = (function(val){
         }
         
         return retList;
+    };
+    
+    DoublyLinkedList.prototype.copy = function() {
+        return this.sublist(0, internal(this).length);
     };
     
     DoublyLinkedList.prototype.getValueAt = function(index){
