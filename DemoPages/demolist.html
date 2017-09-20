@@ -51,19 +51,16 @@
         stage.on("stagemousedown", function(){go ^= true; console.info("go.");});
 
         // start the tick and point it at the window so we can do some work before updating the stage:
-        createjs.Ticker.fps = 30;
-        createjs.Ticker.addEventListener("tick", tick);
+        // createjs.Ticker.fps = 30;
+        // createjs.Ticker.addEventListener("tick", tick);
     }
     
     let rotAmt = 0;
     
-    function tick(event) {
-        gc.graphics.clear();
-        if(_go){   
-            list.visualizeChain(textLayer, gc);
-            // draw the updates to stage:
-            stage.update(event);
-        }
+    function renderToStage(event) {
+        list.visualizeChain(textLayer, gc);
+        // draw the updates to stage:
+        stage.update(event);
     }
     
     function enterbind(){
@@ -91,17 +88,23 @@
 <p>DoublyLinkedList demo.
 </p>
 <canvas id="testCanvas" width="1400" height="250" style="border:3px; border-style:solid; border-color=#000000"></canvas>
-Data: <input type="text" id="stringfield"><button id="pushbackbtn" onclick="list.push_back($('#stringfield')[0].value);document.getElementById('stringfield').select()">Push Back</button>
-<button onclick="list.push_front($('#stringfield')[0].value);document.getElementById('stringfield').select()">Push Front</button>
-<button onclick="list.pop_back()">Pop back</button> <button onclick="list.pop_front()">Pop front</button> <br />
-Index 1:<input type="text" id="indexfield" size='5'><button id="insertAtBtn" onclick="list.insertAt(parseInt($('#indexfield')[0].value),$('#stringfield')[0].value)">Insert Index</button><button onclick="list.removeAt(parseInt($('#indexfield')[0].value))">Remove Index</button><button onclick="list.assign(parseInt($('#indexfield')[0].value), $('#stringfield')[0].value)">Assign</button>
 <br />
-Index 2:<input type="text" id="indexfield2" size='5'><button id="swapBtn" onclick="list.swap($('#indexfield')[0].value,$('#indexfield2')[0].value)">Swap</button> <br />
+Data: <input type="text" id="stringfield"><button id="pushbackbtn" onclick="list.push_back($('#stringfield')[0].value);document.getElementById('stringfield').select();renderToStage()">Push Back</button>
+<button onclick="list.push_front($('#stringfield')[0].value);document.getElementById('stringfield').select();renderToStage()">Push Front</button>
+<button onclick="list.pop_back();renderToStage()">Pop back</button> <button onclick="list.pop_front();renderToStage()">Pop front</button>
+<br /><button onclick="console.log(list.indexOf($('#stringfield')[0].value))">Log 1st Index of Data (C)</button>
+<button onclick="console.log(list.lastIndexOf($('#stringfield')[0].value))">Log Last Index of Data (C)</button>
+<br />Index 1:<input type="text" id="indexfield" size='5'><button id="insertAtBtn" onclick="list.insertAt(parseInt($('#indexfield')[0].value),$('#stringfield')[0].value);renderToStage()">Insert Index</button><button onclick="list.removeAt(parseInt($('#indexfield')[0].value));renderToStage()">Remove Index</button><button onclick="list.assign(parseInt($('#indexfield')[0].value), $('#stringfield')[0].value);renderToStage()">Assign</button>
+<br />
+Index 2:<input type="text" id="indexfield2" size='5'><button id="swapBtn" onclick="list.swap($('#indexfield')[0].value,$('#indexfield2')[0].value);renderToStage()">Swap</button> <br />
 Misc:<br />
-<button onclick="list.sort()">Alphebetize (Merge sort)</button>
-<button onclick="list.reverse($('#indexfield')[0].value,$('#indexfield2')[0].value)">Reverse list</button>
-<button onclick="list.appendList(list.copy())">Append copy</button>
+<button onclick="list.sort();renderToStage()">Alphebetize (Merge sort)</button>
+<button onclick="list.reverse(parseInt($('#indexfield')[0].value),parseInt($('#indexfield2')[0].value));renderToStage()">Reverse list</button>
+<button onclick="list.appendList(list.copy());renderToStage()">Append copy</button>
 <br />
-<button onclick="console.info(list.length)">Report Length (console)</button>
+<button onclick="console.info(list.length);renderToStage()">Report Length (C)</button>
+<button onclick="console.log(list.toArray())">Log as Array (C)</button>
+<button onclick="console.log(list.toArrayBackwards())">Log as Reversed Array (C)</button>
+<button onclick="list = new DoublyLinkedList(); renderToStage()">Reset</button>
 </body>
 </html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDF: Binary (AVL) tree demo</title>
+    <script src="../util/jquery-ui-1.12.1.custom/external/jquery/jquery.js"></script>
+    <script src="../util/createjs-2015.11.26.min.js"></script>
+    <script src="../util/strangl.js"></script>
+    <script src="../BinarySearchTree.js"></script>
+<script type="text/javascript">
+    var canvas;
+    var exportRoot;
+    var gc, textLayer;
+    
+    var sgl = strangl;
+    var _go = true;
+    
+    var bst = new BinarySearchTree();
+    
+    function go(){
+        _go ^= true;
+    }
+    
+    var cube;
+    var cubeWire;
+    var cubeModel;
+    
+    function init() {
+        // create a new stage and point it at our canvas:
+        canvas = document.getElementById("testCanvas");
+        
+        stage = new createjs.Stage(canvas);
+        exportRoot = new createjs.MovieClip();
+        exportRoot.x = 0;
+        exportRoot.y = 0;
+        stage.addChild(exportRoot);
+        
+        // Add graphics context to stage:
+        gc = new createjs.Shape();
+        // gc.x = canvas.width / 2;
+        // gc.y = canvas.height / 2;
+        exportRoot.addChild(gc);
+        exportRoot.gc = gc;
+        
+        textLayer = new createjs.MovieClip();
+        textLayer.x = 0;
+        textLayer.y = 0;
+        exportRoot.addChild(textLayer);
+        exportRoot.textLayer = textLayer;
+                      
+        stage.on("stagemousedown", function(){go ^= true; console.info("go.");});
+
+        // start the tick and point it at the window so we can do some work before updating the stage:
+        // createjs.Ticker.fps = 30;
+        // createjs.Ticker.addEventListener("tick", tick);
+    }
+    
+    let rotAmt = 0;
+    
+    function renderToStage(event) {
+        if(_go){   
+            bst.visualizeTree(textLayer, gc);
+            // draw the updates to stage:
+            stage.update(event);
+        }
+    }
+    
+    function enterbind(){
+        $("#keyentry").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#insertButton").click();
+            }
+        });
+    }
+</script>
+
+</head>
+
+<body onload="init(); enterbind()">
+<p>AVL tree demo:
+</p>
+<canvas id="testCanvas" width="1400" height="512" style="border:3px; border-style:solid; border-color=#000000"></canvas>
+<br />
+<!-- Key:<input type="text" id="keyentry" /><button id="insertButton" onclick="bst.insertKeyBalanced($('#keyentry')[0].value)">Insert Data</button> -->
+Key:<input type="text" id="keyentry" /><button id="insertButton" onclick="bst.insertKeyBalanced($('#keyentry')[0].value);renderToStage();$('#keyentry').select()">Insert Data</button><button onclick="console.info(bst.searchKey($('#keyentry')[0].value))">Search Data (Console)</button>
+<button onclick="bst.removeKeyBalanced($('#keyentry')[0].value); renderToStage();$('#keyentry').select()">Remove Data</button>
+<br />Log as:<button onclick="console.log(bst.toArray())">Array by depth (C)</button>
+<button onclick="console.log(bst.toArrayPreO())">Array by pre order (C)</button>
+<button onclick="console.log(bst.toArrayInO())">Array by in order (C)</button>
+<button onclick="console.log(bst.toArrayPostO())">Array by post order (C)</button>
+<br /><button onclick="bst = new BinarySearchTree(); renderToStage()">Reset</button>
+</body>
+</html>

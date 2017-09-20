@@ -40,8 +40,8 @@ let BinarySearchTree = (function(val){
         // Helper recursive function:
         function insert(val,node,which){
             if(node.children[which] == null){
-                pathToNode.push(node.children[which]);
                 node.children[which] = new Node(val);
+                pathToNode.push(node.children[which]);
                 return;
             }
             
@@ -150,14 +150,6 @@ let BinarySearchTree = (function(val){
             return Y;
         }
         
-        // if(pathToNode.length == 2){
-        //     if(pathToNode[0].children[0] == pathToNode[1])    // L
-        //         pathToNode[0].balanceFactor = -1;
-        //     else                                            // R
-        //         pathToNode[1].balanceFactor = 1;
-        //     return;
-        // }
-        
         // Check for balance. Last element is inserted node.
         // i - leaf
         // i-1 - parent
@@ -213,41 +205,79 @@ let BinarySearchTree = (function(val){
         }
     };
     
-    BinarySearchTree.prototype.insertKey = function(val) {
+    BinarySearchTree.prototype.removeKeyBalanced = function(val) {
         let ns = internal(this);
-        if(ns.root == null){
-            ns.root = new Node(val);
+        let curNode = ns.root;
+        if(curNode == null){
             return;
         }
         
-        let curNode = ns.root;
-        function insert(val,node,which){
-            if(node.children[which] == null){
-                node.children[which] = new Node(val);
+        if(curNode.children[0] == null && curNode.children[1] == null){
+            ns.root = null;
+            return;
+        }
+        
+        let pathToNode = [curNode];
+        
+        function findMin(node){
+            let curNode = node;
+            while(curNode.children[0] != null){
+                curNode = curNode.children[0];
+            }
+            return curNode;
+        }
+        
+        function remove(val, node, whichChild){
+            let curNode = node.children[whichChild];
+            
+            if(curNode == null){
                 return;
             }
             
-            let curNode = node.children[which];
-            if(val < curNode.data)
-                insert(val, curNode, 0);
-            else if(val > curNode.data)
-                insert(val, curNode, 1);
+            if(curNode.data > val){
+                remove(val, curNode, 0);
+            } else if (curNode.data < val){
+                remove(val, curNode, 1);
+            } else {
+                if(curNode.children[0]!=null && curNode.children[1]!=null){ // Both children present
+                    let rightMinNode = findMin(curNode.children[1]);
+                    curNode.data = rightMinNode.data;
+                    remove(curNode.data, curNode, 1);
+                } else if (curNode.children[0] != null){
+                    curNode.data = curNode.children[0].data;
+                    curNode.children[1] = curNode.children[0].children[1];
+                    curNode.children[0] = curNode.children[0].children[0];
+                } else if (curNode.children[1] != null){
+                    curNode.data = curNode.children[1].data;
+                    curNode.children[0] = curNode.children[1].children[0];
+                    curNode.children[1] = curNode.children[1].children[1];
+                } else {
+                    node.children[whichChild] = null;
+                }
+            }
         }
         
-        // Only store unique keys.
-        if(val < curNode.data)
-            insert(val, curNode, 0);
-        else if(val > curNode.data)
-            insert(val, curNode, 1);
+        // Base case:
+        if(curNode.data > val){
+            remove(val, curNode, 0);
+        } else if (curNode.data < val){
+            remove(val, curNode, 1);
+        } else { // Cheats activate:
+            let tempParent = {children:[curNode, null]};
+            remove(val, tempParent, 0);
+            delete tempParent;
+        }
+        
+        // Balancing:
+        
     };
     
     BinarySearchTree.prototype.searchKey = function(val) {
         let ns = internal(this);
-        if(ns.root == null){
+        let curNode = ns.root;
+        if(curNode == null){
             return false;
         }
-        
-        let curNode = ns.root;
         
         while(curNode.data != null){
             if(val < curNode.data)
@@ -355,6 +385,78 @@ let BinarySearchTree = (function(val){
         retArray.push(curNode.data);
         
         return retArray;
+    };
+    
+    if(window.createjs == null && window.strangl == null){
+        return BinarySearchTree;
+    }
+    
+    // Here begins the graphical stuff:
+    let sgl = strangl;
+    let cjs = createjs;
+    let arrow = [ new sgl.Line({x:0, y:0, z:0},{x:1, y:0, z:0},"black",1),
+                new sgl.Line({x:.8, y:-.1, z:0},{x:1, y:0, z:0},"black",1) ];
+    let databox = {box: new sgl.Polygon([{x:0, y:0, z:0},{x:0,y:1,z:0},{x:1,y:1,z:0},{x:1,y:0,z:0}],
+                    null, 1, [0xff,0x7f,0x00,.5], {renderWire:true}),
+                    prevpt: new sgl.Vertex(0, .33, 0),
+                    nextpt: new sgl.Vertex(1, .67, 0)
+                    };
+                
+    BinarySearchTree.prototype.visualizeTree = function(clip, gc){
+        let ns = internal(this);
+        
+        let renderList = []; // When transforms are done, push here.
+        clip.removeAllChildren();
+        gc.graphics.clear();
+        if(ns.root == null)
+            return;
+        
+        function drawChild(node, child, pos, layer, layerFactor){
+            if(node.children[child] == null)
+                return;
+            
+            let ypos = layer*15*4;
+            
+            // Box:
+            if(child == 0){
+                renderList.push(databox.box.copy().scale(20).translate(pos - layerFactor/2,ypos,0));
+                renderList.push(new sgl.Line({x:pos, y:ypos-15*4, z:0}, {x:pos - layerFactor/2, y:ypos, z:0}, "black", 1));
+            }
+            else{
+                renderList.push(databox.box.copy().scale(20).translate(pos + layerFactor/2,ypos,0));
+                renderList.push(new sgl.Line({x:pos, y:ypos-15*4, z:0}, {x:pos + layerFactor/2, y:ypos, z:0}, "black", 1));
+            }
+            // Data:
+            let data = new cjs.Text(node.children[child].data, "15px Arial", "#0000ff");
+            if(child == 0)
+                data.x = pos - layerFactor/2+15;
+            else
+                data.x = pos + layerFactor/2+15;
+            data.y = ypos;
+            data.rotation = 90;
+            clip.addChild(data);
+            
+            drawChild(node.children[child], 0, data.x-15, layer +1, layerFactor / 2);
+            drawChild(node.children[child], 1, data.x-15, layer +1, layerFactor / 2);
+        }
+        
+        // Visualize root:
+        // Box:
+        let cWidth = canvas.width;
+        renderList.push(databox.box.copy().scale(20).translate(cWidth/2,0,0));
+        // Data:
+        let data = new cjs.Text(ns.root.data, "15px Arial", "#0000ff");
+        data.x = cWidth/2+15;
+        data.y = 0;
+        data.rotation = 90;
+        clip.addChild(data);
+        
+        drawChild(ns.root, 0, cWidth/2, 1, cWidth/2);
+        drawChild(ns.root, 1, cWidth/2, 1, cWidth/2);
+        
+        for(let i=0, len=renderList.length; i<len; i++){
+            renderList[i].render(gc.graphics);
+        }
     };
     
     return BinarySearchTree;

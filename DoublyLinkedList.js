@@ -46,20 +46,26 @@ let DoublyLinkedList = (function(val){
     DoublyLinkedList.prototype.indexOf = function(value) {
         let ns = internal(this);
         let curNode = ns.head;
-        let i=0;
-        while(i++<ns.length && curNode.data!=value){
+        let i=-1;
+        while(i++<ns.length-1 && curNode.data!=value){
             curNode = curNode.next;
         }
+        if(i==ns.length)
+            return -1;
         return i;
     };
     
     DoublyLinkedList.prototype.lastIndexOf = function(value) {
+        let ns = internal(this);
         let curNode = ns.tail;
         let i=ns.length-1;
-        while(i--<ns.length && curNode.data!=value){
+        while(i-->-1 && curNode.data!=value){
             curNode = curNode.prev;
+            if(curNode == null)
+                return -1;
         }
-        return i;
+        
+        return i+1;
     };
     
     DoublyLinkedList.prototype.getLength = function(){
@@ -366,7 +372,7 @@ let DoublyLinkedList = (function(val){
         return temp;
     };
     
-    if(createjs == null && strangl == null){
+    if(window.createjs == null && window.strangl == null){
         return DoublyLinkedList;
     }
     
@@ -387,6 +393,8 @@ let DoublyLinkedList = (function(val){
         
         let renderList = []; // When transforms are done, push here.
         clip.removeAllChildren();
+        gc.graphics.clear();
+        
         for(let i=0, len=ns.length; i<len; i++){
             // Transform box:
             let curbox = databox.box.copy().scale(20).translate(i*30,0,0);
