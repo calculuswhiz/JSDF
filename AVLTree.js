@@ -1,4 +1,4 @@
-let BinarySearchTree = (function(val){
+let AVLTree = (function(val){
     // Private member access
     let map = new WeakMap();
 
@@ -14,29 +14,127 @@ let BinarySearchTree = (function(val){
         this.balanceFactor = 0;
     };
         
-    function BinarySearchTree(val){
+    function AVLTree(val){
         let ns = internal(this);
         if(val == null){
             ns.root = null;
+            ns.size = 0;
         }
         else{
             ns.root = new Node(val);
+            ns.size = 1;
         }
+        
+        Object.defineProperty(this,"size", {get: function(){return ns.size}});
+    }
+    
+    
+    // Node rotation commands (private):
+    function rotL(array,parentIndex,childIndex){
+        let X = array[parentIndex];
+        let Z = array[childIndex];
+        X.children[1] = Z.children[0]; // X's right child
+        Z.children[0] = X; // Z's left child
+        if(Z.balanceFactor == 0){ // Rebalance.
+            X.balanceFactor = 1;
+            Z.balanceFactor = -1;
+        } else {
+            X.balanceFactor = 0;
+            Z.balanceFactor = 0;
+        }
+        array[parentIndex] = Z; // Simple replace in path array to point the grandparent to the proper node. We won't need the childIndex anymore.
+        return Z;
+    }
+    function rotR(array,parentIndex,childIndex){
+        let X = array[parentIndex];
+        let Z = array[childIndex];
+        X.children[0] = Z.children[1]; // X's left child
+        Z.children[1] = X; // Z's right child
+        if(Z.balanceFactor == 0){ // Rebalance.
+            X.balanceFactor = -1;
+            Z.balanceFactor = 1;
+        } else {
+            X.balanceFactor = 0;
+            Z.balanceFactor = 0;
+        }
+        array[parentIndex] = Z; // Simple replace in path array to point the grandparent to the proper node. We won't need the childIndex anymore.
+        return Z;
+    }
+    function rotLR(array,parentIndex,childIndex){
+        let X = array[parentIndex];
+        let Z = array[childIndex];
+        let Y = Z.children[1];
+        
+        // First rotation:
+        Z.children[1] = Y.children[0];
+        Y.children[0] = Z;
+        
+        // Second rotation:
+        X.children[0] = Y.children[1];
+        Y.children[1] = X;
+        
+        // Balance adjustments:
+        if(Y.balanceFactor < 0){
+            X.balanceFactor = 1;
+            Z.balanceFactor = 0;
+        } else if (Y.balanceFactor == 0) {
+            X.balanceFactor = 0;
+            Z.balanceFactor = 0;
+        } else {
+            X.balanceFactor = 0;
+            Z.balanceFactor = -1;
+        }
+        Y.balanceFactor = 0;
+        
+        array[parentIndex] = Y;
+        return Y;
+        
+    }
+    function rotRL(array,parentIndex,childIndex){
+        let X = array[parentIndex];
+        let Z = array[childIndex];
+        let Y = Z.children[0];
+        
+        // First rotation:
+        Z.children[0] = Y.children[1];
+        Y.children[1] = Z;
+        
+        // Second rotation:
+        X.children[1] = Y.children[0];
+        Y.children[0] = X;
+        
+        // Balance adjustments:
+        if(Y.balanceFactor > 0){
+            X.balanceFactor = -1;
+            Z.balanceFactor = 0;
+        } else if (Y.balanceFactor == 0) {
+            X.balanceFactor = 0;
+            Z.balanceFactor = 0;
+        } else {
+            X.balanceFactor = 0;
+            Z.balanceFactor = 1;
+        }
+        Y.balanceFactor = 0;
+        
+        array[parentIndex] = Y;
+        return Y;
     }
     
     // AVL tree
-    BinarySearchTree.prototype.insertKeyBalanced = function(val) {
+    AVLTree.prototype.insertKeyBalanced = function(val) {
         let ns = internal(this);
         
         // Empty. Fist node:
         if(ns.root == null){
             ns.root = new Node(val);
+            ns.size += 1;
             return;
         }
         
         let curNode = ns.root;
         let pathToNode = [curNode];
         
+        let inserted = true;
         // Helper recursive function:
         function insert(val,node,which){
             if(node.children[which] == null){
@@ -52,6 +150,8 @@ let BinarySearchTree = (function(val){
                 insert(val, curNode, 0);
             else if(val > curNode.data)
                 insert(val, curNode, 1);
+            else
+                inserted = false;
         }
         
         // Only store unique keys.
@@ -59,96 +159,13 @@ let BinarySearchTree = (function(val){
             insert(val, curNode, 0);
         else if(val > curNode.data)
             insert(val, curNode, 1);
+        else
+            return;
         
-        function rotL(parentIndex,childIndex){
-            let X = pathToNode[parentIndex];
-            let Z = pathToNode[childIndex];
-            X.children[1] = Z.children[0]; // X's right child
-            Z.children[0] = X; // Z's left child
-            if(Z.balanceFactor == 0){ // Rebalance.
-                X.balanceFactor = 1;
-                Z.balanceFactor = -1;
-            } else {
-                X.balanceFactor = 0;
-                Z.balanceFactor = 0;
-            }
-            pathToNode[parentIndex] = Z; // Simple replace in path array to point the grandparent to the proper node. We won't need the childIndex anymore.
-            return Z;
-        }
-        function rotR(parentIndex,childIndex){
-            let X = pathToNode[parentIndex];
-            let Z = pathToNode[childIndex];
-            X.children[0] = Z.children[1]; // X's left child
-            Z.children[1] = X; // Z's right child
-            if(Z.balanceFactor == 0){ // Rebalance.
-                X.balanceFactor = -1;
-                Z.balanceFactor = 1;
-            } else {
-                X.balanceFactor = 0;
-                Z.balanceFactor = 0;
-            }
-            pathToNode[parentIndex] = Z; // Simple replace in path array to point the grandparent to the proper node. We won't need the childIndex anymore.
-            return Z;
-        }
-        function rotLR(parentIndex,childIndex){
-            let X = pathToNode[parentIndex];
-            let Z = pathToNode[childIndex];
-            let Y = Z.children[1];
-            
-            // First rotation:
-            Z.children[1] = Y.children[0];
-            Y.children[0] = Z;
-            
-            // Second rotation:
-            X.children[0] = Y.children[1];
-            Y.children[1] = X;
-            
-            // Balance adjustments:
-            if(Y.balanceFactor < 0){
-                X.balanceFactor = 1;
-                Z.balanceFactor = 0;
-            } else if (Y.balanceFactor == 0) {
-                X.balanceFactor = 0;
-                Z.balanceFactor = 0;
-            } else {
-                X.balanceFactor = 0;
-                Z.balanceFactor = -1;
-            }
-            Y.balanceFactor = 0;
-            
-            pathToNode[parentIndex] = Y;
-            return Y;
-            
-        }
-        function rotRL(parentIndex,childIndex){
-            let X = pathToNode[parentIndex];
-            let Z = pathToNode[childIndex];
-            let Y = Z.children[0];
-            
-            // First rotation:
-            Z.children[0] = Y.children[1];
-            Y.children[1] = Z;
-            
-            // Second rotation:
-            X.children[1] = Y.children[0];
-            Y.children[0] = X;
-            
-            // Balance adjustments:
-            if(Y.balanceFactor > 0){
-                X.balanceFactor = -1;
-                Z.balanceFactor = 0;
-            } else if (Y.balanceFactor == 0) {
-                X.balanceFactor = 0;
-                Z.balanceFactor = 0;
-            } else {
-                X.balanceFactor = 0;
-                Z.balanceFactor = 1;
-            }
-            Y.balanceFactor = 0;
-            
-            pathToNode[parentIndex] = Y;
-            return Y;
-        }
+        if(!inserted)
+            return;
+        
+        ns.size += 1;
         
         // Check for balance. Last element is inserted node.
         // i - leaf
@@ -161,9 +178,9 @@ let BinarySearchTree = (function(val){
                 if(parent.balanceFactor > 0){  // Right heavy
                     grandparent = pathToNode[i-2];
                     if(pathToNode[i].balanceFactor < 0){
-                        postRotated = rotRL(i-1, i);
+                        postRotated = rotRL(pathToNode, i-1, i);
                     } else {
-                        postRotated = rotL(i-1, i);
+                        postRotated = rotL(pathToNode, i-1, i);
                     }
                 } else if(parent.balanceFactor < 0) {
                     parent.balanceFactor = 0;
@@ -176,9 +193,9 @@ let BinarySearchTree = (function(val){
                 if(parent.balanceFactor < 0) { // Left heavy
                     grandparent = pathToNode[i-2];
                     if(pathToNode[i].balanceFactor > 0){
-                        postRotated = rotLR(i-1, i);
+                        postRotated = rotLR(pathToNode, i-1, i);
                     } else {
-                        postRotated = rotR(i-1, i);
+                        postRotated = rotR(pathToNode, i-1, i);
                     }
                 } else if(parent.balanceFactor > 0) {
                     parent.balanceFactor = 0;
@@ -205,7 +222,7 @@ let BinarySearchTree = (function(val){
         }
     };
     
-    BinarySearchTree.prototype.removeKeyBalanced = function(val) {
+    AVLTree.prototype.removeKeyBalanced = function(val) {
         let ns = internal(this);
         let curNode = ns.root;
         if(curNode == null){
@@ -214,6 +231,7 @@ let BinarySearchTree = (function(val){
         
         if(curNode.children[0] == null && curNode.children[1] == null){
             ns.root = null;
+            ns.size = 0;
             return;
         }
         
@@ -227,10 +245,15 @@ let BinarySearchTree = (function(val){
             return curNode;
         }
         
+        let removed = true;
         function remove(val, node, whichChild){
             let curNode = node.children[whichChild];
             
+            pathToNode.push(curNode);
+            
             if(curNode == null){
+                // Nothing to remove:
+                removed = false;
                 return;
             }
             
@@ -265,21 +288,78 @@ let BinarySearchTree = (function(val){
         } else { // Cheats activate:
             let tempParent = {children:[curNode, null]};
             remove(val, tempParent, 0);
-            delete tempParent;
+            return;
         }
         
-        // Balancing:
+        if(!removed)
+            return;
         
+        ns.size -= 1;
+        
+        // Check for balance. Last element is deleted node. Will be gc'd after leaving scope. We still need it for now.
+        // i - current node
+        // i-1 - parent
+        // i-2 - grandparent
+        for(let i=pathToNode.length-1; i>0; i--){
+            let parent = pathToNode[i-1]; // X
+            let grandparent = pathToNode[i-2]; // G
+            let postRotated = null;
+            
+            if(pathToNode[i].data < parent.data){ // Left side
+                if(parent.balanceFactor > 0){ // Right heavy parent
+                    pathToNode[i] = parent.children[1];
+                    if(pathToNode[i].balanceFactor < 0)
+                        postRotated = rotRL(pathToNode, i-1, i);
+                    else
+                        postRotated = rotL(pathToNode, i-1, i);
+                } else {
+                    if(parent.balanceFactor == 0){
+                        parent.balanceFactor = 1;
+                        break;
+                    }
+                    postRotated = parent;
+                    postRotated.balanceFactor = 0;
+                    continue;
+                }
+            } else {
+                if(parent.balanceFactor < 0){ // Left heavy parent
+                    pathToNode[i] = parent.children[0];
+                    if(pathToNode[i].balanceFactor > 0)
+                        postRotated = rotLR(pathToNode, i-1, i);
+                    else
+                        postRotated = rotR(pathToNode, i-1, i);
+                } else {
+                    if(parent.balanceFactor == 0){
+                        parent.balanceFactor = -1;
+                        break;
+                    }
+                    postRotated = parent;
+                    postRotated.balanceFactor = 0;
+                    continue;
+                }
+            }
+            
+            // After rotation:
+            if(grandparent != null) {
+                if(grandparent.children[0] == parent){ // Left
+                    grandparent.children[0] = postRotated;
+                } else {
+                    grandparent.children[1] = postRotated;
+                }
+                break;
+            } else {
+                if(postRotated != null)
+                    ns.root = postRotated;
+                break;
+            }
+        }
     };
     
-    BinarySearchTree.prototype.searchKey = function(val) {
+    AVLTree.prototype.searchKey = function(val) {
         let ns = internal(this);
         let curNode = ns.root;
-        if(curNode == null){
-            return false;
-        }
         
-        while(curNode.data != null){
+        while(curNode != null){
             if(val < curNode.data)
                 curNode = curNode.children[0];
             else if(val > curNode.data)
@@ -290,7 +370,67 @@ let BinarySearchTree = (function(val){
         return false;
     };
     
-    BinarySearchTree.prototype.toArray = function() {
+    // Pop functions:
+    
+    
+    // Retrievall functions:
+    AVLTree.prototype.getMinKey = function() {
+        let ns = internal(this);
+        let curNode = ns.root;
+        
+        if(curNode == null)
+            return;
+        
+        while(curNode.children[0] != null){
+            curNode = curNode.children[0];
+        }
+        
+        return curNode.data;
+    };
+    
+    AVLTree.prototype.getNthKey = function(n) {
+        let ns = internal(this);
+        let curNode = ns.root;
+        
+        if(n >= ns.size)
+            return;
+        
+        let shouldStop = false;
+        
+        function InO(curNode){
+            let retVal;
+            if(curNode.children[0] != null)
+                retVal = InO(curNode.children[0]);
+            if(shouldStop)
+                return retVal;
+            if(--n < 0){
+                shouldStop = true;
+                return curNode.data;
+            }
+            if(curNode.children[1] != null)
+                retVal = InO(curNode.children[1]);
+            
+            return retVal;
+        }
+        
+        return InO(curNode);
+    };
+    
+    AVLTree.prototype.getMaxKey = function() {
+        let ns = internal(this);
+        let curNode = ns.root;
+        
+        if(curNode == null)
+            return;
+        
+        while(curNode.children[1] != null){
+            curNode = curNode.children[1];
+        }
+        
+        return curNode.data;
+    };
+    
+    AVLTree.prototype.toArray = function() {
         let ns = internal(this);
         let bfArray = [ns.root];
         let retArray = [ns.root.data];
@@ -312,13 +452,13 @@ let BinarySearchTree = (function(val){
         return retArray;
     };
     
-    BinarySearchTree.prototype.toArrayPreO = function() {
+    AVLTree.prototype.toArrayPreO = function() {
         let ns = internal(this);
         let retArray = [];
         let curNode = ns.root;
         
         function PreO(curNode){
-            let retArray = []
+            let retArray = [];
             retArray.push(curNode.data);
             if(curNode.children[0] != null)
                 retArray = retArray.concat(PreO(curNode.children[0]));
@@ -337,13 +477,13 @@ let BinarySearchTree = (function(val){
         return retArray;
     };
     
-    BinarySearchTree.prototype.toArrayInO = function() {
+    AVLTree.prototype.toArrayInO = function() {
         let ns = internal(this);
         let retArray = [];
         let curNode = ns.root;
         
         function InO(curNode){
-            let retArray = []
+            let retArray = [];
             if(curNode.children[0] != null)
                 retArray = retArray.concat(InO(curNode.children[0]));
             retArray.push(curNode.data);
@@ -362,7 +502,7 @@ let BinarySearchTree = (function(val){
         return retArray;
     };
     
-    BinarySearchTree.prototype.toArrayPostO = function() {
+    AVLTree.prototype.toArrayPostO = function() {
         let ns = internal(this);
         let retArray = [];
         let curNode = ns.root;
@@ -388,7 +528,7 @@ let BinarySearchTree = (function(val){
     };
     
     if(window.createjs == null && window.strangl == null){
-        return BinarySearchTree;
+        return AVLTree;
     }
     
     // Here begins the graphical stuff:
@@ -402,7 +542,7 @@ let BinarySearchTree = (function(val){
                     nextpt: new sgl.Vertex(1, .67, 0)
                     };
                 
-    BinarySearchTree.prototype.visualizeTree = function(clip, gc){
+    AVLTree.prototype.visualizeTree = function(clip, gc){
         let ns = internal(this);
         
         let renderList = []; // When transforms are done, push here.
@@ -427,7 +567,8 @@ let BinarySearchTree = (function(val){
                 renderList.push(new sgl.Line({x:pos, y:ypos-15*4, z:0}, {x:pos + layerFactor/2, y:ypos, z:0}, "black", 1));
             }
             // Data:
-            let data = new cjs.Text(node.children[child].data, "15px Arial", "#0000ff");
+            // let data = new cjs.Text(node.children[child].data, "15px Arial", "#0000ff");
+            let data = new cjs.Text(node.children[child].balanceFactor+":"+node.children[child].data, "15px Arial", "#0000ff");
             if(child == 0)
                 data.x = pos - layerFactor/2+15;
             else
@@ -445,7 +586,7 @@ let BinarySearchTree = (function(val){
         let cWidth = canvas.width;
         renderList.push(databox.box.copy().scale(20).translate(cWidth/2,0,0));
         // Data:
-        let data = new cjs.Text(ns.root.data, "15px Arial", "#0000ff");
+        let data = new cjs.Text(ns.root.balanceFactor+":"+ns.root.data, "15px Arial", "#0000ff");
         data.x = cWidth/2+15;
         data.y = 0;
         data.rotation = 90;
@@ -459,5 +600,5 @@ let BinarySearchTree = (function(val){
         }
     };
     
-    return BinarySearchTree;
+    return AVLTree;
 })();

@@ -6,7 +6,7 @@
     <script src="../util/jquery-ui-1.12.1.custom/external/jquery/jquery.js"></script>
     <script src="../util/createjs-2015.11.26.min.js"></script>
     <script src="../util/strangl.js"></script>
-    <script src="../BinarySearchTree.js"></script>
+    <script src="../AVLTree.js"></script>
 <script type="text/javascript">
     var canvas;
     var exportRoot;
@@ -15,7 +15,7 @@
     var sgl = strangl;
     var _go = true;
     
-    var bst = new BinarySearchTree();
+    var avltree = new AVLTree();
     
     function go(){
         _go ^= true;
@@ -59,7 +59,7 @@
     
     function renderToStage(event) {
         if(_go){   
-            bst.visualizeTree(textLayer, gc);
+            avltree.visualizeTree(textLayer, gc);
             // draw the updates to stage:
             stage.update(event);
         }
@@ -77,17 +77,26 @@
 </head>
 
 <body onload="init(); enterbind()">
-<p>AVL tree demo:
+<p>AVL tree demo (First number is the balanceFactor of the tree.):
 </p>
 <canvas id="testCanvas" width="1400" height="512" style="border:3px; border-style:solid; border-color=#000000"></canvas>
 <br />
-<!-- Key:<input type="text" id="keyentry" /><button id="insertButton" onclick="bst.insertKeyBalanced($('#keyentry')[0].value)">Insert Data</button> -->
-Key:<input type="text" id="keyentry" /><button id="insertButton" onclick="bst.insertKeyBalanced($('#keyentry')[0].value);renderToStage();$('#keyentry').select()">Insert Data</button><button onclick="console.info(bst.searchKey($('#keyentry')[0].value))">Search Data (Console)</button>
-<button onclick="bst.removeKeyBalanced($('#keyentry')[0].value); renderToStage();$('#keyentry').select()">Remove Data</button>
-<br />Log as:<button onclick="console.log(bst.toArray())">Array by depth (C)</button>
-<button onclick="console.log(bst.toArrayPreO())">Array by pre order (C)</button>
-<button onclick="console.log(bst.toArrayInO())">Array by in order (C)</button>
-<button onclick="console.log(bst.toArrayPostO())">Array by post order (C)</button>
-<br /><button onclick="bst = new BinarySearchTree(); renderToStage()">Reset</button>
+<!-- Key:<input type="text" id="keyentry" /><button id="insertButton" onclick="avltree.insertKeyBalanced($('#keyentry')[0].value)">Insert Data</button> -->
+Key:<input type="text" id="keyentry" />
+    <button id="insertButton" onclick="avltree.insertKeyBalanced($('#keyentry')[0].value);renderToStage();$('#keyentry').select()">Insert Data</button>
+    <button onclick="console.info(avltree.searchKey($('#keyentry')[0].value))">Search Data (Console)</button>
+    <button onclick="avltree.removeKeyBalanced($('#keyentry')[0].value); renderToStage();$('#keyentry').select()">Remove Data</button>
+<br />Report:<input type="text" id="nth"><button onclick="console.log(avltree.getNthKey(Math.floor($('#nth')[0].value))); $('#nth').select()">Nth key (C)</button>
+    <button onclick="console.log(avltree.getMinKey()); $('#nth').select()">Min Key (C)</button>
+    <button onclick="console.log(avltree.getMaxKey()); $('#nth').select()">Max Key (C)</button>
+    <button onclick="console.log(avltree.size)">Number of members(C)</button>
+<br />Remove:<button onclick="avltree.removeKeyBalanced(avltree.getNthKey(Math.floor($('#nth')[0].value))); renderToStage();$('#nth').select()">Nth key</button>
+    <button onclick="avltree.removeKeyBalanced(avltree.getMinKey()); renderToStage();$('#nth').select()">Min Key</button>
+    <button onclick="avltree.removeKeyBalanced(avltree.getMaxKey()); renderToStage();$('#nth').select()">Max Key</button>
+<br />Log as:<button onclick="console.log(avltree.toArray())">Array by depth (C)</button>
+    <button onclick="console.log(avltree.toArrayPreO())">Array by pre order (C)</button>
+    <button onclick="console.log(avltree.toArrayInO())">Array by in order (C)</button>
+    <button onclick="console.log(avltree.toArrayPostO())">Array by post order (C)</button>
+<br /><button onclick="avltree = new AVLTree(); renderToStage()">Reset</button>
 </body>
 </html>
