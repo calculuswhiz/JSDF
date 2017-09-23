@@ -15,25 +15,25 @@ let DoublyLinkedList = (function(val){
     };
         
     function DoublyLinkedList(val){
-        let ns = internal(this);
+        let my = internal(this);
         if(val == null){
-            ns.head = null;
-            ns.tail = null;
-            ns.length = 0;
+            my.head = null;
+            my.tail = null;
+            my.length = 0;
         }
         else{
-            ns.head = new Node(val);
-            ns.tail = ns.head;
-            ns.length = 1;
+            my.head = new Node(val);
+            my.tail = my.head;
+            my.length = 1;
         }
         
-        Object.defineProperty(this,"length", {get: function(){return ns.length}});
+        Object.defineProperty(this,"length", {get: function(){return my.length}});
         
         // Internal use only.
-        ns.getNode = function(index){
-            if(index < 0 || index > ns.length)
+        my.getNode = function(index){
+            if(index < 0 || index > my.length)
                 throw "Index out of bounds";
-            let curPtr = ns.head;
+            let curPtr = my.head;
             for(let i=0; i<index; i++){
                 curPtr = curPtr.next;
             }
@@ -44,21 +44,21 @@ let DoublyLinkedList = (function(val){
         
     
     DoublyLinkedList.prototype.indexOf = function(value) {
-        let ns = internal(this);
-        let curNode = ns.head;
+        let my = internal(this);
+        let curNode = my.head;
         let i=-1;
-        while(i++<ns.length-1 && curNode.data!=value){
+        while(i++<my.length-1 && curNode.data!=value){
             curNode = curNode.next;
         }
-        if(i==ns.length)
+        if(i==my.length)
             return -1;
         return i;
     };
     
     DoublyLinkedList.prototype.lastIndexOf = function(value) {
-        let ns = internal(this);
-        let curNode = ns.tail;
-        let i=ns.length-1;
+        let my = internal(this);
+        let curNode = my.tail;
+        let i=my.length-1;
         while(i-->-1 && curNode.data!=value){
             curNode = curNode.prev;
             if(curNode == null)
@@ -69,13 +69,13 @@ let DoublyLinkedList = (function(val){
     };
     
     DoublyLinkedList.prototype.getLength = function(){
-        let ns = internal(this);
-        return ns.length;
+        let my = internal(this);
+        return my.length;
     };
     
     DoublyLinkedList.prototype.swap = function(a,b) {
-        let ns = internal(this);
-        if(a<0 || a>ns.length || b<0 || b>ns.length)
+        let my = internal(this);
+        if(a<0 || a>my.length || b<0 || b>my.length)
             throw "Index out of bounds";
         
         if(a==b)
@@ -87,8 +87,8 @@ let DoublyLinkedList = (function(val){
             a = tmp;
         }
         
-        let front = {el: ns.head, i:0};
-        let back = {el: ns.tail, i:ns.length-1};
+        let front = {el: my.head, i:0};
+        let back = {el: my.tail, i:my.length-1};
         
         while(front.i < a){
             front.i++;
@@ -116,18 +116,18 @@ let DoublyLinkedList = (function(val){
     // The reason we can do this is because all Objects, arrays, etc. are actually just references.
     // Therefore it's actually more costly to change the next-prev pointers (2n plus edge checks vs 3n/2).
     DoublyLinkedList.prototype.reverse = function(a,b) {
-        let ns = internal(this);
+        let my = internal(this);
         a|=0; // if null, set 0;
         
         if(b==null)
-            b=ns.length-1;
-        if(a>b || a<0 || b<=0 || a>=ns.length || b>=ns.length)
+            b=my.length-1;
+        if(a>b || a<0 || b<=0 || a>=my.length || b>=my.length)
             throw "Index out of bounds";
         if(a==b)
             return;
         
-        let front = {el: ns.head, i:0};
-        let back = {el: ns.tail, i:ns.length-1};
+        let front = {el: my.head, i:0};
+        let back = {el: my.tail, i:my.length-1};
         
         while(front.i < a){
             front.el = front.el.next;
@@ -152,25 +152,25 @@ let DoublyLinkedList = (function(val){
     };
 
     DoublyLinkedList.prototype.insertAt = function(index, value) {
-        let ns = internal(this);
-        if(index > ns.length || index < 0)
+        let my = internal(this);
+        if(index > my.length || index < 0)
             throw "Index out of bounds";
         
-        ns.length += 1;
+        my.length += 1;
         // Make new
-        if(ns.head == null){
-            ns.head = new Node(value);
-            ns.tail = ns.head;
+        if(my.head == null){
+            my.head = new Node(value);
+            my.tail = my.head;
             return;
         }
         
-        let curNode = ns.head;
+        let curNode = my.head;
         let tempNode = new Node(value);
         
         // Insert beginning.
         if(index == 0){
-            tempNode.next = ns.head;
-            ns.head = tempNode;
+            tempNode.next = my.head;
+            my.head = tempNode;
             return;
         }
         
@@ -184,7 +184,7 @@ let DoublyLinkedList = (function(val){
         tempNode.prev = curNode;
         
         if(tempNode.next == null)
-            ns.tail = tempNode;
+            my.tail = tempNode;
         else
             tempNode.next.prev = tempNode;
     };
@@ -198,23 +198,23 @@ let DoublyLinkedList = (function(val){
     };
     
     DoublyLinkedList.prototype.removeAt = function(index) {
-        let ns = internal(this);
-        if(index >= ns.length || index < 0 || ns.length == 0)
+        let my = internal(this);
+        if(index >= my.length || index < 0 || my.length == 0)
             return undefined;
             // throw "Index out of bounds";
         
-        ns.length -= 1;
+        my.length -= 1;
         
-        if(ns.length == 0){
-            ns.head = null;
-            ns.tail = null;
+        if(my.length == 0){
+            my.head = null;
+            my.tail = null;
             return; // No references left.
         }
         
-        let curNode = ns.head;
+        let curNode = my.head;
         if(index == 0){
-            ns.head = curNode.next; // Garbage collector should get it.
-            ns.head.prev = null;
+            my.head = curNode.next; // Garbage collector should get it.
+            my.head.prev = null;
             return;
         }
         
@@ -226,7 +226,7 @@ let DoublyLinkedList = (function(val){
         curNode.next = curNode.next.next;
         
         if(curNode.next == null)
-            ns.tail = curNode;
+            my.tail = curNode;
         else
             curNode.next.prev = curNode;
     };
@@ -240,11 +240,11 @@ let DoublyLinkedList = (function(val){
     };
     
     DoublyLinkedList.prototype.assign = function(index, value) {
-        let ns = internal(this);
-        if(index >= ns.length || index < 0 || ns.length == 0)
+        let my = internal(this);
+        if(index >= my.length || index < 0 || my.length == 0)
             throw "Index out of bounds";
         
-        let curNode = ns.head;
+        let curNode = my.head;
         
         for(let i=0; i<index; i++){
             curNode = curNode.next;
@@ -254,7 +254,7 @@ let DoublyLinkedList = (function(val){
     };
     
     DoublyLinkedList.prototype.sort = function(compareFunction) {
-        let ns = internal(this);
+        let my = internal(this);
         if(compareFunction == null){
             compareFunction = function(a,b){
                 if(a<b) return -1;
@@ -298,8 +298,8 @@ let DoublyLinkedList = (function(val){
         }
         
         let initList = [];
-        let curNode = ns.head;
-        for(let i=0, len=ns.length; i<len; i++){
+        let curNode = my.head;
+        for(let i=0, len=my.length; i<len; i++){
             initList.push([curNode.data]);
             curNode = curNode.next;
         }
@@ -308,20 +308,20 @@ let DoublyLinkedList = (function(val){
         for(let i=0, len=sorted.length; i<len; i++){
             result.push_back(sorted[i]);
         }
-        ns.head = internal(result).head;
-        ns.tail = internal(result).tail;
+        my.head = internal(result).head;
+        my.tail = internal(result).tail;
     };
     
     DoublyLinkedList.prototype.sublist = function(index,len) {
-        let ns = internal(this);
+        let my = internal(this);
         index |= 0;
         if(len == null)
-            len = ns.length - index;
-        if(index < 0 || index > ns.length)
+            len = my.length - index;
+        if(index < 0 || index > my.length)
             throw "Index out of bounds";
         var retList = new DoublyLinkedList();
         
-        let curNode = ns.head;
+        let curNode = my.head;
         for(let i=0; i<index; i++){
             curNode = curNode.next;
         }
@@ -339,11 +339,11 @@ let DoublyLinkedList = (function(val){
     };
     
     DoublyLinkedList.prototype.getValueAt = function(index){
-        let ns = internal(this);
-        if(index >= ns.length || index < 0)
+        let my = internal(this);
+        if(index >= my.length || index < 0)
             return null;
         
-        let curNode = ns.head;
+        let curNode = my.head;
         for(let i=0; i<index; i++){
             curNode = curNode.next;
         }
@@ -351,10 +351,10 @@ let DoublyLinkedList = (function(val){
     };
     
     DoublyLinkedList.prototype.toArray = function(){
-        let ns = internal(this);
-        let curNode = ns.head;
+        let my = internal(this);
+        let curNode = my.head;
         let temp = [];
-        for(let i=0, len=ns.length; i<len; i++){
+        for(let i=0, len=my.length; i<len; i++){
             temp.push(curNode.data);
             curNode = curNode.next;
         }
@@ -362,10 +362,10 @@ let DoublyLinkedList = (function(val){
     };
     
     DoublyLinkedList.prototype.toArrayBackwards = function(){
-        let ns = internal(this);
-        let curNode = ns.tail;
+        let my = internal(this);
+        let curNode = my.tail;
         let temp = [];
-        for(let i=0, len=ns.length; i<len; i++){
+        for(let i=0, len=my.length; i<len; i++){
             temp.push(curNode.data);
             curNode = curNode.prev;
         }
@@ -388,14 +388,14 @@ let DoublyLinkedList = (function(val){
                     };
                 
     DoublyLinkedList.prototype.visualizeChain = function(clip, gc){
-        let ns = internal(this);
-        let curNode = ns.head;
+        let my = internal(this);
+        let curNode = my.head;
         
         let renderList = []; // When transforms are done, push here.
         clip.removeAllChildren();
         gc.graphics.clear();
         
-        for(let i=0, len=ns.length; i<len; i++){
+        for(let i=0, len=my.length; i<len; i++){
             // Transform box:
             let curbox = databox.box.copy().scale(20).translate(i*30,0,0);
             renderList.push(curbox);

@@ -15,17 +15,17 @@ let AVLTree = (function(val){
     };
         
     function AVLTree(val){
-        let ns = internal(this);
+        let my = internal(this);
         if(val == null){
-            ns.root = null;
-            ns.size = 0;
+            my.root = null;
+            my.size = 0;
         }
         else{
-            ns.root = new Node(val);
-            ns.size = 1;
+            my.root = new Node(val);
+            my.size = 1;
         }
         
-        Object.defineProperty(this,"size", {get: function(){return ns.size}});
+        Object.defineProperty(this,"size", {get: function(){return my.size}});
     }
     
     
@@ -122,16 +122,16 @@ let AVLTree = (function(val){
     
     // AVL tree
     AVLTree.prototype.insertKeyBalanced = function(val) {
-        let ns = internal(this);
+        let my = internal(this);
         
         // Empty. Fist node:
-        if(ns.root == null){
-            ns.root = new Node(val);
-            ns.size += 1;
+        if(my.root == null){
+            my.root = new Node(val);
+            my.size += 1;
             return;
         }
         
-        let curNode = ns.root;
+        let curNode = my.root;
         let pathToNode = [curNode];
         
         let inserted = true;
@@ -165,7 +165,7 @@ let AVLTree = (function(val){
         if(!inserted)
             return;
         
-        ns.size += 1;
+        my.size += 1;
         
         // Check for balance. Last element is inserted node.
         // i - leaf
@@ -216,22 +216,22 @@ let AVLTree = (function(val){
                 break;
             } else {
                 if(postRotated != null)
-                    ns.root = postRotated;
+                    my.root = postRotated;
                 break;
             }
         }
     };
     
     AVLTree.prototype.removeKeyBalanced = function(val) {
-        let ns = internal(this);
-        let curNode = ns.root;
+        let my = internal(this);
+        let curNode = my.root;
         if(curNode == null){
             return;
         }
         
         if(curNode.children[0] == null && curNode.children[1] == null){
-            ns.root = null;
-            ns.size = 0;
+            my.root = null;
+            my.size = 0;
             return;
         }
         
@@ -294,7 +294,7 @@ let AVLTree = (function(val){
         if(!removed)
             return;
         
-        ns.size -= 1;
+        my.size -= 1;
         
         let lasti = pathToNode.length-1;
         let last = pathToNode[lasti];
@@ -358,15 +358,15 @@ let AVLTree = (function(val){
                     break;
             } else {
                 if(postRotated != null)
-                    ns.root = postRotated;
+                    my.root = postRotated;
                 // break;
             }
         }
     };
     
     AVLTree.prototype.searchKey = function(val) {
-        let ns = internal(this);
-        let curNode = ns.root;
+        let my = internal(this);
+        let curNode = my.root;
         
         while(curNode != null){
             if(val < curNode.data)
@@ -381,10 +381,10 @@ let AVLTree = (function(val){
     
     // Pop functions:
     AVLTree.prototype.removeKeyAt = function(n) {
-        let ns = internal(this);
-        let curNode = ns.root;
+        let my = internal(this);
+        let curNode = my.root;
         
-        if(n >= ns.size)
+        if(n >= my.size)
             return;
         
         let shouldStop = false;
@@ -412,8 +412,8 @@ let AVLTree = (function(val){
     };
     
     AVLTree.prototype.popMinKey = function() {
-        let ns = internal(this);
-        let curNode = ns.root;
+        let my = internal(this);
+        let curNode = my.root;
         
         if(curNode == null)
             return;
@@ -429,8 +429,8 @@ let AVLTree = (function(val){
     };
     
     AVLTree.prototype.popMaxKey = function() {
-        let ns = internal(this);
-        let curNode = ns.root;
+        let my = internal(this);
+        let curNode = my.root;
         
         if(curNode == null)
             return;
@@ -447,10 +447,10 @@ let AVLTree = (function(val){
     
     // Retrieval functions:
     AVLTree.prototype.getKeyAt = function(n) {
-        let ns = internal(this);
-        let curNode = ns.root;
+        let my = internal(this);
+        let curNode = my.root;
         
-        if(n >= ns.size)
+        if(n >= my.size)
             return;
         
         let shouldStop = false;
@@ -475,8 +475,8 @@ let AVLTree = (function(val){
     };
     
     AVLTree.prototype.getMinKey = function() {
-        let ns = internal(this);
-        let curNode = ns.root;
+        let my = internal(this);
+        let curNode = my.root;
         
         if(curNode == null)
             return;
@@ -489,8 +489,8 @@ let AVLTree = (function(val){
     };
     
     AVLTree.prototype.getMaxKey = function() {
-        let ns = internal(this);
-        let curNode = ns.root;
+        let my = internal(this);
+        let curNode = my.root;
         
         if(curNode == null)
             return;
@@ -503,9 +503,9 @@ let AVLTree = (function(val){
     };
     
     AVLTree.prototype.toArray = function() {
-        let ns = internal(this);
-        let bfArray = [ns.root];
-        let retArray = [ns.root.data];
+        let my = internal(this);
+        let bfArray = [my.root];
+        let retArray = [my.root.data];
         let i=0;
         
         while(i < bfArray.length){
@@ -525,9 +525,9 @@ let AVLTree = (function(val){
     };
     
     AVLTree.prototype.toArrayPreO = function() {
-        let ns = internal(this);
+        let my = internal(this);
         let retArray = [];
-        let curNode = ns.root;
+        let curNode = my.root;
         
         function PreO(curNode){
             let retArray = [];
@@ -550,9 +550,9 @@ let AVLTree = (function(val){
     };
     
     AVLTree.prototype.toArrayInO = function() {
-        let ns = internal(this);
+        let my = internal(this);
         let retArray = [];
-        let curNode = ns.root;
+        let curNode = my.root;
         
         function InO(curNode){
             let retArray = [];
@@ -575,9 +575,9 @@ let AVLTree = (function(val){
     };
     
     AVLTree.prototype.toArrayPostO = function() {
-        let ns = internal(this);
+        let my = internal(this);
         let retArray = [];
-        let curNode = ns.root;
+        let curNode = my.root;
         
         function PostO(curNode){
             let retArray = [];
@@ -599,6 +599,29 @@ let AVLTree = (function(val){
         return retArray;
     };
     
+    AVLTree.prototype.copy = function() {
+        let my = internal(this);
+        let destinationTree = new AVLTree(my.root.data);
+        
+        
+        
+        return destinationTree;
+    };
+    
+    // Set ops:
+    function join(avl1, avl2, key){
+        return;
+    }
+    
+    function split(tree, key){
+        return;
+    }
+    
+    // In place union:
+    AVLTree.prototype.union = function(t2) {
+        return;
+    };
+    
     if(window.createjs == null && window.strangl == null){
         return AVLTree;
     }
@@ -615,12 +638,12 @@ let AVLTree = (function(val){
                     };
                 
     AVLTree.prototype.visualizeTree = function(clip, gc){
-        let ns = internal(this);
+        let my = internal(this);
         
         let renderList = []; // When transforms are done, push here.
         clip.removeAllChildren();
         gc.graphics.clear();
-        if(ns.root == null)
+        if(my.root == null)
             return;
         
         function drawChild(node, child, pos, layer, layerFactor){
@@ -658,14 +681,14 @@ let AVLTree = (function(val){
         let cWidth = canvas.width;
         renderList.push(databox.box.copy().scale(20).translate(cWidth/2,0,0));
         // Data:
-        let data = new cjs.Text(ns.root.balanceFactor+":"+ns.root.data, "15px Arial", "#0000ff");
+        let data = new cjs.Text(my.root.balanceFactor+":"+my.root.data, "15px Arial", "#0000ff");
         data.x = cWidth/2+15;
         data.y = 0;
         data.rotation = 90;
         clip.addChild(data);
         
-        drawChild(ns.root, 0, cWidth/2, 1, cWidth/2);
-        drawChild(ns.root, 1, cWidth/2, 1, cWidth/2);
+        drawChild(my.root, 0, cWidth/2, 1, cWidth/2);
+        drawChild(my.root, 1, cWidth/2, 1, cWidth/2);
         
         for(let i=0, len=renderList.length; i<len; i++){
             renderList[i].render(gc.graphics);
