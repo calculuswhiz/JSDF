@@ -49,7 +49,7 @@ This effectively implements private member access using the prototype. (Private 
 
 Things that didn't work:
 ------------------------
-The method described on [Douglas Crockford's website](http://javascript.crockford.com/private.html). This method is also described in *Javascript: The Good Parts* by the same author in 2008. Sorry, Mr. Crockford, I respect your work and your expertise, but didn't quite make the cut. Here's me attempting the same thing from above:
+The method described on [Douglas Crockford's website](http://javascript.crockford.com/private.html). This method is also described in *Javascript: The Good Parts* by the same author in 2008. Sorry, Mr. Crockford, I respect your work and your expertise, but that didn't quite make the cut. Here's me attempting the same thing from above:
 ```
 // Constructor:
 let MyClass = function(params){
@@ -80,4 +80,6 @@ And, yes, this can be remedied by changing the `MyClass.prototype`s above to `th
 
 Interestingly, this kind of makes the intended private members `static` (as in C++) across all instances of the class. I think that could be very useful, but I have yet to do anything with static members besides interacting with the WinAPI. (Please keep in mind that my job is just Flash development =P)
 
+Final remarks:
+--------------
 With all that said, are a lot of these useful? Not really. Again, it's just for fun and practice. You can try these out for yourself. Each data structure is contained in its own .js file for your convenience. Also, you can clone the repo and open `index.html`. Then, open your console and interact from there. Have fun.
