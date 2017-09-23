@@ -266,15 +266,15 @@ let AVLTree = (function(val){
                     let rightMinNode = findMin(curNode.children[1]);
                     curNode.data = rightMinNode.data;
                     remove(curNode.data, curNode, 1);
-                } else if (curNode.children[0] != null){
+                } else if (curNode.children[0] != null){                    // Left child present
                     curNode.data = curNode.children[0].data;
                     curNode.children[1] = curNode.children[0].children[1];
                     curNode.children[0] = curNode.children[0].children[0];
-                } else if (curNode.children[1] != null){
+                } else if (curNode.children[1] != null){                    // Right child present
                     curNode.data = curNode.children[1].data;
                     curNode.children[0] = curNode.children[1].children[0];
                     curNode.children[1] = curNode.children[1].children[1];
-                } else {
+                } else {                                                    // No children present
                     node.children[whichChild] = null;
                 }
             }
@@ -296,19 +296,26 @@ let AVLTree = (function(val){
         
         ns.size -= 1;
         
+        let lasti = pathToNode.length-1;
+        let last = pathToNode[lasti];
+        if(last.children[0] === null && last.children[1] === null)
+            last.balanceFactor = 0;
+        
         // Check for balance. Last element is deleted node. Will be gc'd after leaving scope. We still need it for now.
         // i - current node
         // i-1 - parent
         // i-2 - grandparent
-        for(let i=pathToNode.length-1; i>0; i--){
+        for(let i=lasti; i>0; i--){
             let parent = pathToNode[i-1]; // X
             let grandparent = pathToNode[i-2]; // G
             let postRotated = null;
+            let bal;
             
             if(pathToNode[i].data < parent.data){ // Left side
                 if(parent.balanceFactor > 0){ // Right heavy parent
                     pathToNode[i] = parent.children[1];
-                    if(pathToNode[i].balanceFactor < 0)
+                    bal = pathToNode[i].balanceFactor;
+                    if(bal < 0)
                         postRotated = rotRL(pathToNode, i-1, i);
                     else
                         postRotated = rotL(pathToNode, i-1, i);
@@ -324,7 +331,8 @@ let AVLTree = (function(val){
             } else {
                 if(parent.balanceFactor < 0){ // Left heavy parent
                     pathToNode[i] = parent.children[0];
-                    if(pathToNode[i].balanceFactor > 0)
+                    bal = pathToNode[i].balanceFactor;
+                    if(bal > 0)
                         postRotated = rotLR(pathToNode, i-1, i);
                     else
                         postRotated = rotR(pathToNode, i-1, i);
@@ -346,11 +354,12 @@ let AVLTree = (function(val){
                 } else {
                     grandparent.children[1] = postRotated;
                 }
-                break;
+                if(bal == 0)
+                    break;
             } else {
                 if(postRotated != null)
                     ns.root = postRotated;
-                break;
+                // break;
             }
         }
     };
@@ -371,10 +380,38 @@ let AVLTree = (function(val){
     };
     
     // Pop functions:
+    AVLTree.prototype.removeKeyAt = function(n) {
+        let ns = internal(this);
+        let curNode = ns.root;
+        
+        if(n >= ns.size)
+            return;
+        
+        let shouldStop = false;
+        
+        function InO(curNode){
+            let retVal;
+            if(curNode.children[0] != null)
+                retVal = InO(curNode.children[0]);
+            if(shouldStop)
+                return retVal;
+            if(--n < 0){
+                shouldStop = true;
+                return curNode.data;
+            }
+            if(curNode.children[1] != null)
+                retVal = InO(curNode.children[1]);
+            
+            return retVal;
+        }
+        
+        let retVal = InO(curNode);
+        this.removeKeyBalanced(retVal);
+        
+        return retVal;
+    };
     
-    
-    // Retrievall functions:
-    AVLTree.prototype.getMinKey = function() {
+    AVLTree.prototype.popMinKey = function() {
         let ns = internal(this);
         let curNode = ns.root;
         
@@ -382,13 +419,34 @@ let AVLTree = (function(val){
             return;
         
         while(curNode.children[0] != null){
-            curNode = curNode.children[0];
+            curNode = curNode.children[0]; // Optimize me.
         }
+        
+        let retVal = curNode.data;
+        this.removeKeyBalanced(retVal);
+        
+        return retVal;
+    };
+    
+    AVLTree.prototype.popMaxKey = function() {
+        let ns = internal(this);
+        let curNode = ns.root;
+        
+        if(curNode == null)
+            return;
+        
+        while(curNode.children[1] != null){
+            curNode = curNode.children[1];
+        }
+        
+        let retVal = curNode.data;
+        this.removeKeyBalanced(retVal);
         
         return curNode.data;
     };
     
-    AVLTree.prototype.getNthKey = function(n) {
+    // Retrieval functions:
+    AVLTree.prototype.getKeyAt = function(n) {
         let ns = internal(this);
         let curNode = ns.root;
         
@@ -414,6 +472,20 @@ let AVLTree = (function(val){
         }
         
         return InO(curNode);
+    };
+    
+    AVLTree.prototype.getMinKey = function() {
+        let ns = internal(this);
+        let curNode = ns.root;
+        
+        if(curNode == null)
+            return;
+        
+        while(curNode.children[0] != null){
+            curNode = curNode.children[0];
+        }
+        
+        return curNode.data;
     };
     
     AVLTree.prototype.getMaxKey = function() {

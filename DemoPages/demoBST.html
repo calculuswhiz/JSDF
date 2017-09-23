@@ -86,17 +86,18 @@ Key:<input type="text" id="keyentry" />
     <button id="insertButton" onclick="avltree.insertKeyBalanced($('#keyentry')[0].value);renderToStage();$('#keyentry').select()">Insert Data</button>
     <button onclick="console.info(avltree.searchKey($('#keyentry')[0].value))">Search Data (Console)</button>
     <button onclick="avltree.removeKeyBalanced($('#keyentry')[0].value); renderToStage();$('#keyentry').select()">Remove Data</button>
-<br />Report:<input type="text" id="nth"><button onclick="console.log(avltree.getNthKey(Math.floor($('#nth')[0].value))); $('#nth').select()">Nth key (C)</button>
+<br />Report:<input type="text" id="nth"><button onclick="console.log(avltree.getKeyAt(Math.floor($('#nth')[0].value))); $('#nth').select()">Key At Index (C)</button>
     <button onclick="console.log(avltree.getMinKey()); $('#nth').select()">Min Key (C)</button>
     <button onclick="console.log(avltree.getMaxKey()); $('#nth').select()">Max Key (C)</button>
     <button onclick="console.log(avltree.size)">Number of members(C)</button>
-<br />Remove:<button onclick="avltree.removeKeyBalanced(avltree.getNthKey(Math.floor($('#nth')[0].value))); renderToStage();$('#nth').select()">Nth key</button>
-    <button onclick="avltree.removeKeyBalanced(avltree.getMinKey()); renderToStage();$('#nth').select()">Min Key</button>
-    <button onclick="avltree.removeKeyBalanced(avltree.getMaxKey()); renderToStage();$('#nth').select()">Max Key</button>
+<br />Remove:<button onclick="avltree.removeKeyAt(Math.floor($('#nth')[0].value)); renderToStage();$('#nth').select()">Key At Index</button>
+    <button onclick="avltree.popMinKey(); renderToStage();$('#nth').select()">Min Key</button>
+    <button onclick="avltree.popMaxKey(); renderToStage();$('#nth').select()">Max Key</button>
 <br />Log as:<button onclick="console.log(avltree.toArray())">Array by depth (C)</button>
     <button onclick="console.log(avltree.toArrayPreO())">Array by pre order (C)</button>
     <button onclick="console.log(avltree.toArrayInO())">Array by in order (C)</button>
     <button onclick="console.log(avltree.toArrayPostO())">Array by post order (C)</button>
 <br /><button onclick="avltree = new AVLTree(); renderToStage()">Reset</button>
+    <button onclick="for(let i=0; i<127; i++){avltree.insertKeyBalanced(i)} renderToStage()">Insert Test Set (0-126)</button>
 </body>
 </html>
