@@ -48,8 +48,8 @@ let MyClass = (function(params){
 This effectively implements private member access using the prototype. (Private member access can be implemented much more simply without using the prototype, but that can take up a lot more space than needed.)
 
 Things that didn't work:
-1. The method described on [Douglas Crockford's website](http://javascript.crockford.com/private.html). This method is also described in *Javascript: The Good Parts* by the same author in 2008. Sorry, Mr. Crockford, I respect your work and your expertise, but didn't quite make the cut. Here's me attempting the same thing from above:
 ------------------------
+The method described on [Douglas Crockford's website](http://javascript.crockford.com/private.html). This method is also described in *Javascript: The Good Parts* by the same author in 2008. Sorry, Mr. Crockford, I respect your work and your expertise, but didn't quite make the cut. Here's me attempting the same thing from above:
 ```
 // Constructor:
 let MyClass = function(params){
