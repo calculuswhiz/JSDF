@@ -76,10 +76,10 @@ a.setSize(1);  // Should only set size in a to 1, but...
 console.log("a:"+a.getSize(), "b:"+b.getSize());  // a:1 b:1
 ```
 
-And, yes, this can be remedied by changing the `MyClass.prototype`s above to `this`, but remember that this makes copies every time a new instance is created. Using the prototype, we don't have this problem. Also, you can't move the prototype method definitions outside the constructor either because then it has no access to `size`.
+And, yes, this can be remedied by changing the `MyClass.prototype`s above to `this`, but remember that this makes copies every time a new instance is created. Using the prototype, we don't have this problem, but it came with the problem described above. And, of course, you can't move the prototype method definitions outside the constructor either because then it has no access to `size`.
 
-Interestingly, this kind of makes the intended private members `static` (as in C++) across all instances of the class. I think that could be very useful, but I have yet to do anything with static members besides interacting with the WinAPI. (Please keep in mind that my job is just Flash development =P)
+Interestingly, this kind of makes the intended private members `static` (as in C++) across all instances of the class. I think that could be very useful, but I have yet to have to do anything important with static members. (Please keep in mind that my job is just Flash development =P)
 
 Final remarks:
 --------------
-With all that said, are a lot of these useful? Not really. Again, it's just for fun and practice. You can try these out for yourself. Each data structure is contained in its own .js file for your convenience. Also, you can clone the repo and open `index.html`. Then, open your console and interact from there. Have fun.
+With all that said, are a lot of these useful? Not really. Actually, they may be a little because of the access modifiers. Again, it's just for fun and practice. You can try these out for yourself. Each data structure is contained in its own .js file for your convenience. Also, you can clone the repo and open `index.html`. Then, open your console and interact from there. I included a few demos as well. Have fun.

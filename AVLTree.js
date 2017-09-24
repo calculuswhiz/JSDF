@@ -601,25 +601,29 @@ let AVLTree = (function(val){
     
     AVLTree.prototype.copy = function() {
         let my = internal(this);
+        if(my.root == null)
+            return null;
+        
         let destinationTree = new AVLTree(my.root.data);
+        let their = internal(destinationTree);
+        their.size = my.size;
         
+        let myNode = my.root, theirNode = their.root;
         
+        function copyNode(src, dst){
+            if(src.children[0] != null){
+                dst.children[0] = new Node(src.children[0].data);
+                copyNode(src.children[0], dst.children[0]);
+            }
+            if(src.children[1] != null){
+                dst.children[1] = new Node(src.children[1].data);
+                copyNode(src.children[1], dst.children[1]);
+            }
+        }
+        
+        copyNode(myNode, theirNode);
         
         return destinationTree;
-    };
-    
-    // Set ops:
-    function join(avl1, avl2, key){
-        return;
-    }
-    
-    function split(tree, key){
-        return;
-    }
-    
-    // In place union:
-    AVLTree.prototype.union = function(t2) {
-        return;
     };
     
     if(window.createjs == null && window.strangl == null){

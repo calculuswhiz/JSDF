@@ -98,6 +98,6 @@ Key:<input type="text" id="keyentry" />
     <button onclick="console.log(avltree.toArrayInO())">Array by in order (C)</button>
     <button onclick="console.log(avltree.toArrayPostO())">Array by post order (C)</button>
 <br /><button onclick="avltree = new AVLTree(); renderToStage()">Reset</button>
-    <button onclick="for(let i=0; i<127; i++){avltree.insertKeyBalanced(i)} renderToStage()">Insert Test Set (0-126)</button>
+    <button onclick="for(let i=0; i<127; i++){avltree.insertKeyBalanced(Math.floor(Math.random()*1000)/100)} renderToStage()">Insert Test Set (Random)</button>
 </body>
 </html>
