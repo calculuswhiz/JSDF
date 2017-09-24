@@ -16,7 +16,7 @@ console.log(a.toArray());  // Uh, oh! Infinite loop!
 Didn't your C++/Java profs teach you about access modifiers? Forsooth! Here, I hope to demonstrate secure and correct code by using a method I found online:
 
 ```
-// Define an object:
+// Define an object via closure:
 let MyClass = (function(params){
     // Private member access
     let map = new WeakMap();  // Holds the private properties of the object.
@@ -41,11 +41,11 @@ let MyClass = (function(params){
         // Code here
     };
     
-    return MyClass;
-})();
+    return MyClass; // Replace closure with actual constructor. Gotta love JavaScript.
+})(); // Immediately execute to replace.
 ```
 
-This effectively implements private member access using the prototype. (Private member access can be implemented much more simply without using the prototype, but that can take up a lot more space than needed.)
+This effectively implements private member access using the prototype. (Private member access can be implemented much more simply without using the prototype, but that can take up a lot more space than needed.) This also prevents a malicious user from coming in and adding a prototype function to access private functions. Remember that `internal` is local to the scope of the constructor closure.
 
 Things that didn't work:
 ------------------------
@@ -78,7 +78,7 @@ console.log("a:"+a.getSize(), "b:"+b.getSize());  // a:1 b:1
 
 And, yes, this can be remedied by changing the `MyClass.prototype`s above to `this`, but remember that this makes copies every time a new instance is created. Using the prototype, we don't have this problem, but it came with the problem described above. And, of course, you can't move the prototype method definitions outside the constructor either because then it has no access to `size`.
 
-Interestingly, this kind of makes the intended private members `static` (as in C++) across all instances of the class. I think that could be very useful, but I have yet to have to do anything important with static members. (Please keep in mind that my job is just Flash development =P)
+Interestingly, this kind of makes the intended private members `static` (as in C++) across all instances of the class. I think that could be very useful. In fact, I made use of this in the AVLtree's copy function. Internally, an AVLtree can access any other AVLtree's `internal` function.
 
 Final remarks:
 --------------

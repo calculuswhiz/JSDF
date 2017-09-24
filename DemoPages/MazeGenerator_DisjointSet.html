@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDF: Disjoint Set (Maze Generator) demo</title>
+    <script src="../util/jquery-ui-1.12.1.custom/external/jquery/jquery.js"></script>
+    <script src="../util/createjs-2015.11.26.min.js"></script>
+    <script src="../util/strangl.js"></script>
+    <script src="../DisjointSetForest.js"></script>
+<script type="text/javascript">
+    var canvas;
+    var exportRoot;
+    var gc,gc2, sol;
+    
+    var sgl = strangl;
+    
+    let zoom = 20;
+    let startpoint, endpoint;
+    
+    let disjoint;
+    let w,h;
+    let mazepts;
+    
+    function init() {
+        // create a new stage and point it at our canvas:
+        canvas = document.getElementById("testCanvas");
+        
+        stage = new createjs.Stage(canvas);
+        exportRoot = new createjs.MovieClip();
+        exportRoot.x = 0;
+        exportRoot.y = 0;
+        stage.addChild(exportRoot);
+        
+        sol = new createjs.MovieClip();
+        sol.x=0;sol.y=0;
+        stage.addChild(sol);
+        
+        // Add graphics context to stage:
+        gc = new createjs.Shape();
+        gc.x = 5;
+        gc.y = 5;
+        exportRoot.addChild(gc);
+        exportRoot.gc = gc;
+        
+        gc2 = new createjs.Shape();
+        gc2.x = 5;
+        gc2.y = 5;
+        sol.addChild(gc2);
+        sol.gc2 = gc2; 
+        
+        
+        // start the tick and point it at the window so we can do some work before updating the stage:
+        // createjs.Ticker.fps = 30;
+        // createjs.Ticker.addEventListener("tick", tick);
+    }
+    
+    function funpart(){
+        w = Math.floor(canvas.width/zoom)-1, h = Math.floor(canvas.height/zoom)-1;
+        let area = w*h;
+        startpoint = 0;
+        endpoint = area-1;
+        disjoint = new DisjointSetForest(w*h);
+        
+        let scramble = [];
+        mazepts = [];
+        for(let i=0; i<area; i++){
+            scramble.push(i);
+            mazepts.push({left:false,right:false,up:false,down:false,visited:false});
+        }
+        for(let i=0; i<area; i++){
+            let swap = scramble[i];
+            let key = Math.floor((Math.random()*(area-1)));
+            scramble[i] = scramble[key];
+            scramble[key] = swap;
+        }
+        for(let i=0; i<area; i++){ // Start unions:
+            let curPt = scramble[i];
+            let row = Math.floor(curPt/w);
+            let col = (curPt%w);
+            if(row == h-1 && col == w-1){
+                /* Nothing */
+            } else if(row  == h-1){
+                if(disjoint.union(curPt, curPt+1)){
+                    mazepts[curPt].right = true;
+                    mazepts[curPt+1].left = true;
+                }
+            } else if(col == w-1){
+                if(disjoint.union(curPt, curPt+w)){
+                    mazepts[curPt].down = true;
+                    mazepts[curPt+w].up = true;
+                }
+            }
+            else{
+                if(disjoint.union(curPt, curPt+1)){
+                    mazepts[curPt].right = true;
+                    mazepts[curPt+1].left = true;
+                }
+                if(disjoint.union(curPt, curPt+w)){
+                    mazepts[curPt].down = true;
+                    mazepts[curPt+w].up = true;
+                }
+            }
+        }
+    }
+    
+    function getRowCol(pt){
+        return [pt/w|0, pt%w];
+    }
+    
+    function draw(){
+        let renderList = [];
+        
+        for(let i=0, len=w*h; i<len; i++){
+            let rc = getRowCol(i);
+            if(mazepts[i].right){ // Draw line to right:
+                renderList.push(new sgl.Line({x:rc[1]*zoom,y:rc[0]*zoom,z:0},
+                    {x:rc[1]*zoom+zoom,y:rc[0]*zoom,z:0},"black",1));
+            }
+            if(mazepts[i].down){
+                renderList.push(new sgl.Line({x:rc[1]*zoom,y:rc[0]*zoom,z:0},
+                    {x:rc[1]*zoom,y:rc[0]*zoom+zoom,z:0},"black",1));
+            }
+        }
+        
+        for(let i=0, len=renderList.length; i<len; i++){
+            renderList[i].render(gc.graphics);
+        }
+        
+        exportRoot.cache(0,0,canvas.width,canvas.height);
+        renderToStage();
+    }
+    
+    let visitedNodes = [];
+    function drawExplored(){
+        let renderList = [];
+        let dfsArray = [startpoint];
+        visitedNodes = [];
+        
+        for(let cell=dfsArray.pop(); cell!=endpoint; cell=dfsArray.pop()){
+            let curPt = mazepts[cell];
+            curPt.visited = true;
+            visitedNodes.push(cell);
+            let from = getRowCol(cell);
+            let to = null;
+            if(curPt.left && !mazepts[cell-1].visited){
+                to = getRowCol(cell-1);
+                dfsArray.push(cell-1);
+                renderList.push(new sgl.Line({x:from[1]*zoom,y:from[0]*zoom,z:0}, {x:to[1]*zoom,y:to[0]*zoom,z:0},"rgb(0,255,0)",2));
+            }
+            if(curPt.up && !mazepts[cell-w].visited){
+                to = getRowCol(cell-w);
+                dfsArray.push(cell-w);
+                renderList.push(new sgl.Line({x:from[1]*zoom,y:from[0]*zoom,z:0}, {x:to[1]*zoom,y:to[0]*zoom,z:0},"rgb(0,255,0)",2));
+            }
+            if(curPt.right && !mazepts[cell+1].visited){
+                to = getRowCol(cell+1);
+                dfsArray.push(cell+1);
+                renderList.push(new sgl.Line({x:from[1]*zoom,y:from[0]*zoom,z:0}, {x:to[1]*zoom,y:to[0]*zoom,z:0},"rgb(0,255,0)",2));
+            }
+            if(curPt.down && !mazepts[cell+w].visited){
+                to = getRowCol(cell+w);
+                dfsArray.push(cell+w);
+                renderList.push(new sgl.Line({x:from[1]*zoom,y:from[0]*zoom,z:0}, {x:to[1]*zoom,y:to[0]*zoom,z:0},"rgb(0,255,0)",2));
+            }
+        }
+        
+        visitedNodes.push(endpoint);
+        
+        for(let i=0, len=renderList.length; i<len; i++){
+            renderList[i].render(gc2.graphics);
+        }
+        
+        sol.cache(0,0,canvas.width,canvas.height);
+        renderToStage();
+        // gc.updateCache();
+    }
+    
+    function drawSolution(){
+        let curIdx = 0;
+        let path = [startpoint];
+        let renderList = [];
+        
+        let counter = 0;
+        while(visitedNodes[curIdx] != endpoint){
+            let maxIdx = -1;
+            let tempIdx = visitedNodes[curIdx];
+            let curcell = mazepts[tempIdx];
+            let check = visitedNodes.indexOf(tempIdx-1);
+            if(curcell.left && check>maxIdx){
+                maxIdx = check;
+            }
+            check = visitedNodes.indexOf(tempIdx+1);
+            if(curcell.right && check>maxIdx){
+                maxIdx = check;
+            }
+            check = visitedNodes.indexOf(tempIdx-w);
+            if(curcell.up && check>maxIdx){
+                maxIdx = check;
+            }
+            check = visitedNodes.indexOf(tempIdx+w);
+            if(curcell.down && check>maxIdx){
+                maxIdx = check;
+            }
+            path.push(visitedNodes[maxIdx]);
+            curIdx = maxIdx;
+            counter++;
+            // console.log(curIdx);
+        }
+        
+        // console.log(path);
+        
+        for(let i=0, len=path.length; i<len; i++){
+            let from=getRowCol(path[i]);
+            let to=getRowCol(path[i+1]);
+            renderList.push(new sgl.Line({x:from[1]*zoom,y:from[0]*zoom,z:0}, {x:to[1]*zoom,y:to[0]*zoom,z:0},"rgb(255,0,0)",2));
+        }
+        
+        for(let i=0, len=renderList.length; i<len; i++){
+            renderList[i].render(gc2.graphics);
+        }
+        
+        sol.updateCache();
+        renderToStage();
+    }
+    
+    function renderToStage(event) {
+        // draw the updates to stage:
+        stage.update(event);
+    }
+    
+    function enterbind(){
+        // $("#keyentry").keyup(function(event){
+        //     if(event.keyCode == 13){
+        //         $("#insertButton").click();
+        //     }
+        // });
+    }
+    
+    function clearAll(){
+        exportRoot.gc.graphics.clear();
+        sol.gc2.graphics.clear();
+    }
+    
+</script>
+
+</head>
+
+<body onload="init();funpart();draw();drawExplored();drawSolution();">
+<p>Maze Generator Demo (For Disjoint Sets):
+    Follow the lines!
+</p>
+<canvas id="testCanvas" width="1400" height="1000" style="border:3px; border-style:solid; border-color=#000000"></canvas>
+<br />
+Controls:
+    <button onclick="clearAll();zoom=Math.floor($('#linesize')[0].value);funpart();draw();drawExplored();drawSolution();">Redraw</button>
+    <button onclick="clearAll();renderToStage()">Clear</button>
+<br/>Line length (smaller lines=bigger maze):<input type="text" id="linesize" value="20">
+    <button onclick="sol.visible ^= true;renderToStage()">Hide/show solution</button>
+</body>
+</html>

@@ -13,17 +13,8 @@
     var gc, textLayer;
     
     var sgl = strangl;
-    var _go = true;
     
     var list = new DoublyLinkedList();
-    
-    function go(){
-        _go ^= true;
-    }
-    
-    var cube;
-    var cubeWire;
-    var cubeModel;
     
     function init() {
         // create a new stage and point it at our canvas:
@@ -47,15 +38,11 @@
         textLayer.y = 0;
         exportRoot.addChild(textLayer);
         exportRoot.textLayer = textLayer;
-                      
-        stage.on("stagemousedown", function(){go ^= true; console.info("go.");});
 
         // start the tick and point it at the window so we can do some work before updating the stage:
         // createjs.Ticker.fps = 30;
         // createjs.Ticker.addEventListener("tick", tick);
     }
-    
-    let rotAmt = 0;
     
     function renderToStage(event) {
         list.visualizeChain(textLayer, gc);
