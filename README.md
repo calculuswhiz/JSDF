@@ -16,7 +16,7 @@ console.log(a.toArray());  // Uh, oh! Infinite loop!
 Didn't your C++/Java profs teach you about access modifiers? Forsooth! Here, I hope to demonstrate secure and correct code by using a method I found online:
 
 ```
-// Define an object via closure:
+// Define an object constructor via closure:
 let MyClass = (function(params){
     // Private member access
     let map = new WeakMap();  // Holds the private properties of the object.
@@ -41,11 +41,11 @@ let MyClass = (function(params){
         // Code here
     };
     
-    return MyClass; // Replace closure with actual constructor. Gotta love JavaScript.
+    return MyClass; // Replace external function. Gotta love JavaScript.
 })(); // Immediately execute to replace.
 ```
 
-This effectively implements private member access using the prototype. (Private member access can be implemented much more simply without using the prototype, but that can take up a lot more space than needed.) This also prevents a malicious user from coming in and adding a prototype function to access private functions. Remember that `internal` is local to the scope of the constructor closure.
+This effectively implements private member access using the prototype. (Private member access can be implemented much more simply without using the prototype, but that can take up a lot more space than needed.) This also prevents a malicious user from coming in and adding a prototype function to access private functions. Remember that `internal` is local to the scope of the closure's outer function.
 
 Things that didn't work:
 ------------------------
