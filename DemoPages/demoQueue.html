@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDF: Queue demo</title>
+    <script src="../util/jquery-ui-1.12.1.custom/external/jquery/jquery.js"></script>
+    <script src="../util/createjs-2015.11.26.min.js"></script>
+    <script src="../util/strangl.js"></script>
+    <script src="../Queue.js"></script>
+<script type="text/javascript">
+    var canvas;
+    var exportRoot;
+    var gc, textLayer;
+    
+    var sgl = strangl;
+    
+    var queue = new Queue();
+    
+    function init() {
+        // create a new stage and point it at our canvas:
+        canvas = document.getElementById("testCanvas");
+        
+        stage = new createjs.Stage(canvas);
+        exportRoot = new createjs.MovieClip();
+        exportRoot.x = 0;
+        exportRoot.y = 0;
+        stage.addChild(exportRoot);
+        
+        // Add graphics context to stage:
+        gc = new createjs.Shape();
+        // gc.x = canvas.width / 2;
+        // gc.y = canvas.height / 2;
+        exportRoot.addChild(gc);
+        exportRoot.gc = gc;
+        
+        textLayer = new createjs.MovieClip();
+        textLayer.x = 0;
+        textLayer.y = 0;
+        exportRoot.addChild(textLayer);
+        exportRoot.textLayer = textLayer;
+
+        // start the tick and point it at the window so we can do some work before updating the stage:
+        // createjs.Ticker.fps = 30;
+        // createjs.Ticker.addEventListener("tick", tick);
+    }
+        
+    function renderToStage(event) {
+        queue.visualizeQueue(gc);
+        // draw the updates to stage:
+        stage.update(event);
+    }
+    
+    function enterbind(){
+        $("#keyentry").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#pushbutton").click();
+            }
+        });
+    }
+</script>
+
+</head>
+
+<body onload="init(); enterbind()">
+<p>AVL tree demo (First number is the balanceFactor of the tree.):
+</p>
+<canvas id="testCanvas" width="200" height="700" style="border:3px; border-style:solid; border-color=#000000"></canvas>
+<br />
+Key:<input type="text" id="keyentry">
+    <button onclick="queue.push($('#keyentry')[0].value);renderToStage();$('#keyentry')[0].value=Math.random()*1000|0;$('#keyentry').select()" id="pushbutton">Push</button>
+    <button onclick="queue.pop();renderToStage()">Pop</button>
+    <button onclick="for(let i=0; i<10; i++){queue.push(Math.random()*1000|0)}renderToStage()">Random set of 10</button>
+    <button onclick="while(!queue.isEmpty()){console.info('Popped:',queue.pop())};console.log('All Done.');renderToStage()">Pop until clear</button>
+<br/><button onclick="console.log(queue.toArray())">Report array</button>
+</body>
+</html>

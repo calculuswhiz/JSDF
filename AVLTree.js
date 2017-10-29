@@ -6,7 +6,7 @@ let AVLTree = (function(val){
         if(!map.has(object))
             map.set(object, {});
         return map.get(object);
-    }
+    };
 
     let Node = function(data){
         this.data = data;
